@@ -91,8 +91,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         html { scroll-behavior: smooth; }
-        
-        /* CORREÇÃO CRÍTICA iOS: Evita que ícones bloqueiem cliques */
         [data-lucide], svg.lucide { pointer-events: none; }
         
         :root, html.theme-light { --sys-bg-body: #f3f4f6; --sys-bg-surface: #ffffff; --sys-text-primary: #111827; --sys-text-secondary: #6b7280; --sys-border: #e5e7eb; --sys-accent: #1e3a8a; }
@@ -193,7 +191,6 @@
             </div>
 
             <div class="mt-auto pt-6 border-t sys-border pb-safe flex justify-end px-2">
-                <!-- Acesso Admin Seguro com Google Auth -->
                 <button onclick="window.openAdminLogin()" class="p-3 sys-text-secondary opacity-10 hover:opacity-100 transition-all cursor-pointer"><i data-lucide="settings" class="w-6 h-6"></i></button>
             </div>
         </div>
@@ -354,11 +351,11 @@
                 </div>
                 <div id="admin-view-courses" class="hidden">
                     <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Catálogo de Produtos Destaque</h4><button onclick="window.openCourseEditor()" class="bg-purple-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="shopping-bag" class="w-5 h-5"></i> Novo Produto</button></div>
-                    <div id="admin-courses-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div id="admin-courses-list" class="flex flex-col gap-3"></div>
                 </div>
                 <div id="admin-view-books" class="hidden">
                     <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Prestadores de Serviços</h4><button onclick="window.openBookEditor()" class="bg-green-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="briefcase" class="w-5 h-5"></i> Novo Serviço</button></div>
-                    <div id="admin-books-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div id="admin-books-list" class="flex flex-col gap-3"></div>
                 </div>
                 <div id="admin-view-categories" class="hidden">
                     <div class="flex gap-3 mb-6 bg-gray-50 p-4 rounded-2xl border border-gray-100"><input type="text" id="new-category-input" placeholder="Nome da Loja Parceira..." class="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 outline-none text-gray-900 bg-white"><button onclick="window.createCategory()" class="bg-gray-800 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="plus" class="w-4 h-4"></i> Adicionar Loja</button></div>
@@ -371,7 +368,7 @@
                 </div>
                 <div id="admin-view-bio" class="hidden">
                     <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Apresentação do Guia</h4><button onclick="window.saveBio()" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-blue-950 transition-colors cursor-pointer"><i data-lucide="save" class="w-4 h-4"></i> Guardar Texto</button></div>
-                    <div><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded hover:bg-gray-100 cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.execEditor('italic')" class="p-2 bg-white border border-gray-200 rounded hover:bg-gray-100 cursor-pointer"><i data-lucide="italic" class="w-4 h-4"></i></button><button type="button" onclick="window.insertEditorLink()" class="px-3 py-1 bg-white border border-gray-200 rounded text-sm hover:bg-gray-100 cursor-pointer">Link</button></div><div id="bio-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[400px] bg-white overflow-y-auto prose prose-blue max-w-none shadow-inner outline-none"></div></div>
+                    <div><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.currentEditorId='bio-fulltext'; window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded hover:bg-gray-100 cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.currentEditorId='bio-fulltext'; window.execEditor('italic')" class="p-2 bg-white border border-gray-200 rounded hover:bg-gray-100 cursor-pointer"><i data-lucide="italic" class="w-4 h-4"></i></button><button type="button" onclick="window.currentEditorId='bio-fulltext'; window.insertEditorLink()" class="px-3 py-1 bg-white border border-gray-200 rounded text-sm hover:bg-gray-100 cursor-pointer">Link</button></div><div id="bio-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[400px] bg-white overflow-y-auto prose prose-blue max-w-none shadow-inner outline-none"></div></div>
                 </div>
                 <div id="admin-view-config" class="hidden">
                     <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Ajustes Globais</h4><button onclick="window.saveConfig()" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-blue-950 transition-colors cursor-pointer"><i data-lucide="save" class="w-4 h-4"></i> Guardar Ajustes</button></div>
@@ -420,9 +417,47 @@
                 </div>
                 <input type="text" id="post-tags" placeholder="Etiquetas (ex: pizza, promoção, delivery)" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900">
                 <div class="bg-blue-50/30 p-5 rounded-xl border border-blue-100 grid grid-cols-2 gap-4"><input type="text" id="post-image" placeholder="Link da Imagem da Oferta" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none"><input type="text" id="post-youtube" placeholder="Link Vídeo Promo (Opcional)" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none"></div>
-                <div><label class="block text-sm font-bold mb-1">Detalhes (Regras, Validade)</label><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.insertEditorButton()" class="px-3 py-1 bg-green-50 text-green-800 border-green-200 border rounded shadow-sm text-sm hover:bg-green-100 ml-auto cursor-pointer">Botão WhatsApp</button></div><div id="post-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[300px] bg-white overflow-y-auto prose prose-blue max-w-none shadow-inner outline-none"></div></div>
+                <div><label class="block text-sm font-bold mb-1">Detalhes (Regras, Validade)</label><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.currentEditorId='post-fulltext'; window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.currentEditorId='post-fulltext'; window.insertEditorImage()" class="px-3 py-1 bg-white border border-gray-200 rounded shadow-sm text-sm hover:bg-gray-100 cursor-pointer">Img</button><button type="button" onclick="window.currentEditorId='post-fulltext'; window.insertEditorVideo()" class="px-3 py-1 bg-white border border-gray-200 rounded shadow-sm text-sm hover:bg-gray-100 cursor-pointer">YouTube</button><button type="button" onclick="window.currentEditorId='post-fulltext'; window.insertEditorButton()" class="px-3 py-1 bg-green-50 text-green-800 border-green-200 border rounded shadow-sm text-sm hover:bg-green-100 ml-auto cursor-pointer">Botão WhatsApp</button></div><div id="post-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[300px] bg-white overflow-y-auto prose prose-blue max-w-none shadow-inner outline-none"></div></div>
             </div>
             <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between"><button id="btn-delete-editor" onclick="window.deletePost(document.getElementById('edit-post-id').value, true)" class="hidden text-red-600 font-bold px-4 hover:bg-red-50 rounded-xl py-2 cursor-pointer">Excluir</button><div class="flex gap-3 ml-auto"><button onclick="window.closeEditor()" class="px-6 py-2.5 border border-gray-300 rounded-xl cursor-pointer">Cancelar</button><button onclick="window.savePost()" class="px-8 py-2.5 bg-blue-900 text-white rounded-xl font-bold cursor-pointer">Guardar</button></div></div>
+        </div>
+    </div>
+
+    <!-- Editor de Produtos Vitrine -->
+    <div id="course-editor-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center modal-overlay px-4 py-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-[95vw] h-[95vh] flex flex-col relative overflow-hidden text-gray-900">
+            <div class="p-5 border-b flex justify-between items-center bg-purple-50/50"><h3 id="course-editor-title" class="text-xl font-bold text-purple-900">Produto</h3><button onclick="window.closeCourseEditor()" class="p-2 text-gray-400 hover:text-gray-600 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <div class="p-6 flex-1 overflow-y-auto flex flex-col gap-6">
+                <input type="hidden" id="edit-course-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="text" id="course-title" placeholder="Nome do Produto" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-purple-700"><input type="text" id="course-subtitle" placeholder="Subtítulo" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-purple-700"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="text" id="course-cover" placeholder="Link da Imagem Principal" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-purple-700"><input type="text" id="course-workload" placeholder="Categoria/Marca" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-purple-700"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-gray-200 pt-6">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200"><label class="flex items-center gap-2 font-bold mb-3 cursor-pointer"><input type="checkbox" id="course-has-presential" class="w-4 h-4 cursor-pointer" onchange="window.toggleCourseFormats()"> Retirada na Loja</label><div id="course-presential-fields" class="flex flex-col gap-2 opacity-50 pointer-events-none"><input type="text" id="course-price-presential" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Preço (Ex: R$ 149,90)" disabled><input type="text" id="course-btn-presential" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Texto Botão (Ex: Reservar)" disabled><input type="text" id="course-link-presential" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Link WhatsApp" disabled></div></div>
+                    <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100"><label class="flex items-center gap-2 font-bold mb-3 cursor-pointer"><input type="checkbox" id="course-has-online" class="w-4 h-4 cursor-pointer" onchange="window.toggleCourseFormats()"> Delivery / Entrega</label><div id="course-online-fields" class="flex flex-col gap-2 opacity-50 pointer-events-none"><input type="text" id="course-price-online" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Preço c/ Entrega" disabled><input type="text" id="course-btn-online" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Texto Botão (Ex: Pedir Agora)" disabled><input type="text" id="course-link-online" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Link WhatsApp/Cardápio" disabled></div></div>
+                </div>
+                <div><label class="block text-sm font-bold mb-1">Descrição do Produto</label><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.currentEditorId='course-fulltext'; window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.currentEditorId='course-fulltext'; window.insertEditorImage()" class="px-3 py-1 bg-white border border-gray-200 rounded shadow-sm text-sm hover:bg-gray-100 cursor-pointer">Img</button></div><div id="course-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[250px] bg-white overflow-y-auto prose prose-purple max-w-none shadow-inner outline-none"></div></div>
+                <input type="hidden" id="course-likes" value="0"><input type="hidden" id="course-sample" value="">
+            </div>
+            <div class="p-6 border-t bg-gray-50 flex justify-between"><button id="btn-delete-course" onclick="window.deleteCourse(document.getElementById('edit-course-id').value)" class="hidden px-5 py-2.5 text-red-600 font-bold hover:bg-red-50 rounded-xl transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4 inline mr-2"></i> Excluir</button><div class="flex gap-3 ml-auto"><button onclick="window.closeCourseEditor()" class="px-6 py-2.5 border border-gray-300 rounded-xl font-medium hover:bg-gray-100 cursor-pointer">Cancelar</button><button onclick="window.saveCourse()" id="btn-save-course" class="px-8 py-2.5 bg-purple-700 text-white rounded-xl font-bold shadow-lg hover:bg-purple-800 cursor-pointer">Guardar Produto</button></div></div>
+        </div>
+    </div>
+
+    <!-- Editor de Serviços -->
+    <div id="book-editor-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center modal-overlay px-4 py-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-[95vw] h-[95vh] flex flex-col relative overflow-hidden text-gray-900">
+            <div class="p-5 border-b flex justify-between items-center bg-green-50/50"><h3 id="book-editor-title" class="text-xl font-bold text-green-900">Serviço Local</h3><button onclick="window.closeBookEditor()" class="p-2 text-gray-400 hover:text-gray-600 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <div class="p-6 flex-1 overflow-y-auto flex flex-col gap-6">
+                <input type="hidden" id="edit-book-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="text" id="book-title" placeholder="Nome do Serviço/Profissional" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-green-700"><input type="text" id="book-subtitle" placeholder="Especialidade" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-green-700"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="text" id="book-cover" placeholder="Link da Foto" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-green-700"><input type="text" id="book-pages" placeholder="Área de Atuação (Bairros)" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-green-700"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-gray-200 pt-6">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200"><label class="flex items-center gap-2 font-bold mb-3 cursor-pointer"><input type="checkbox" id="book-has-physical" class="w-4 h-4 cursor-pointer" onchange="window.toggleBookFormats()"> Visita Técnica</label><div id="book-physical-fields" class="flex flex-col gap-2 opacity-50 pointer-events-none"><input type="text" id="book-price-physical" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Taxa de Visita (Ex: R$ 50,00 ou Grátis)" disabled><input type="text" id="book-btn-physical" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Texto Botão (Ex: Agendar Visita)" disabled><input type="text" id="book-link-physical" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Link WhatsApp" disabled></div></div>
+                    <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100"><label class="flex items-center gap-2 font-bold mb-3 cursor-pointer"><input type="checkbox" id="book-has-ebook" class="w-4 h-4 cursor-pointer" onchange="window.toggleBookFormats()"> Orçamento Online</label><div id="book-ebook-fields" class="flex flex-col gap-2 opacity-50 pointer-events-none"><input type="text" id="book-price-ebook" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Preço (Ex: Gratuito)" disabled><input type="text" id="book-btn-ebook" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Texto Botão (Ex: Pedir Orçamento)" disabled><input type="text" id="book-link-ebook" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Link WhatsApp" disabled></div></div>
+                </div>
+                <div><label class="block text-sm font-bold mb-1">Descrição dos Serviços</label><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.currentEditorId='book-fulltext'; window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.currentEditorId='book-fulltext'; window.insertEditorImage()" class="px-3 py-1 bg-white border border-gray-200 rounded shadow-sm text-sm hover:bg-gray-100 cursor-pointer">Img</button></div><div id="book-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[250px] bg-white overflow-y-auto prose prose-green max-w-none shadow-inner outline-none"></div></div>
+                <input type="hidden" id="book-likes" value="0"><input type="hidden" id="book-sample" value="">
+            </div>
+            <div class="p-6 border-t bg-gray-50 flex justify-between"><button id="btn-delete-book" onclick="window.deleteBook(document.getElementById('edit-book-id').value)" class="hidden px-5 py-2.5 text-red-600 font-bold hover:bg-red-50 rounded-xl transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4 inline mr-2"></i> Excluir</button><div class="flex gap-3 ml-auto"><button onclick="window.closeBookEditor()" class="px-6 py-2.5 border border-gray-300 rounded-xl font-medium hover:bg-gray-100 cursor-pointer">Cancelar</button><button onclick="window.saveBook()" id="btn-save-book" class="px-8 py-2.5 bg-green-700 text-white rounded-xl font-bold shadow-lg hover:bg-green-800 cursor-pointer">Guardar Serviço</button></div></div>
         </div>
     </div>
 
@@ -432,13 +467,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // IMPORTADO O GOOGLE AUTH E O SIGNOUT PARA A SEGURANÇA MÁXIMA DO PAINEL
         import { getAuth, onAuthStateChanged, signInAnonymously, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, arrayUnion, arrayRemove, increment, setDoc, query, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // CRÍTICO: COLOQUE AQUI O SEU EMAIL DO GOOGLE PARA ACEDER AO PAINEL ADMIN
-        // Nenhum outro email no mundo conseguirá abrir a sua área de administração.
-        const ADMIN_EMAILS = ["gvconecta2025@gmail.com"]; 
+        const ADMIN_EMAILS = ["seuemail@gmail.com"]; 
 
         const firebaseConfig = { apiKey: "AIzaSyCg5aIHRDyOPHDwrP_OFYMn2AE9euWVOyw", authDomain: "professorluizhenrique-a9fe9.firebaseapp.com", projectId: "professorluizhenrique-a9fe9", storageBucket: "professorluizhenrique-a9fe9.firebasestorage.app", messagingSenderId: "354928637639", appId: "1:354928637639:web:fd144793b51237618ff0e2" };
         
@@ -449,11 +482,7 @@
 
         const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const appId = 'plh-desenvolvimento-jovens';
 
-        // SANITIZAÇÃO CONTRA HACKERS (XSS)
-        window.escapeHTML = (str) => {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-        };
+        window.escapeHTML = (str) => { if (!str) return ''; return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); };
 
         window.updateCategoriesMenu = () => {
             const dbCats = window.siteCategories.map(c => window.escapeHTML(c.name)); 
@@ -468,8 +497,7 @@
         };
 
         window.onload = async () => {
-            try { await signInAnonymously(auth); } catch (err) { console.error("Erro auth anonima", err); }
-            
+            try { await signInAnonymously(auth); } catch (err) { console.error("Erro auth", err); }
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     const postsQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), limit(100));
@@ -480,6 +508,12 @@
                     
                     const groupsQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), limit(100));
                     onSnapshot(groupsQuery, (snapshot) => { window.siteGroups = []; snapshot.forEach(doc => { window.siteGroups.push({ id: doc.id, ...doc.data() }); }); window.siteGroups.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)); window.renderCommunityGroups(); if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-community').classList.contains('hidden')) window.renderAdminGroups(); });
+
+                    const coursesQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'courses'), limit(100));
+                    onSnapshot(coursesQuery, (snapshot) => { window.siteCourses = []; snapshot.forEach(doc => { window.siteCourses.push({ id: doc.id, ...doc.data() }); }); window.siteCourses.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); window.renderCourses(); if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-courses').classList.contains('hidden')) window.renderAdminCourses(); });
+
+                    const booksQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'books'), limit(100));
+                    onSnapshot(booksQuery, (snapshot) => { window.siteBooks = []; snapshot.forEach(doc => { window.siteBooks.push({ id: doc.id, ...doc.data() }); }); window.siteBooks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); window.renderLibrary(); if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-books').classList.contains('hidden')) window.renderAdminBooks(); });
 
                     onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config'), (docSnap) => { 
                         if(docSnap.exists()) { 
@@ -505,51 +539,33 @@
                         } 
                         if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-config').classList.contains('hidden')) window.renderAdminConfig(); 
                     });
+
+                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'bio'), (docSnap) => { if(docSnap.exists()) { window.siteBio = docSnap.data().fullText; } else { window.siteBio = window.defaultBioText; } window.renderBio(); });
                 }
             });
         };
 
-        /* O NOVO SISTEMA DE LOGIN DE GRAU EMPRESARIAL COM GOOGLE */
-        window.openAdminLogin = () => {
-            if(!document.getElementById('sidebar-menu').classList.contains('-translate-x-full')) window.toggleMobileMenu();
-            document.getElementById('login-modal').classList.remove('hidden');
-            document.getElementById('login-error').classList.add('hidden');
-        };
-
+        window.openAdminLogin = () => { if(!document.getElementById('sidebar-menu').classList.contains('-translate-x-full')) window.toggleMobileMenu(); document.getElementById('login-modal').classList.remove('hidden'); document.getElementById('login-error').classList.add('hidden'); };
         window.closeAdminLogin = () => document.getElementById('login-modal').classList.add('hidden');
-
         window.loginWithGoogle = async () => {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
                 const userEmail = result.user.email.toLowerCase();
-                
                 if (ADMIN_EMAILS.includes(userEmail)) {
-                    window.closeAdminLogin();
-                    document.getElementById('dashboard-modal').classList.remove('hidden');
-                    window.switchAdminTab('posts');
-                    window.showToast("Acesso Autorizado!");
+                    window.closeAdminLogin(); document.getElementById('dashboard-modal').classList.remove('hidden'); window.switchAdminTab('posts'); window.showToast("Acesso Autorizado!");
                 } else {
-                    // Segurança: Desloga o intruso imediatamente do Google Auth
-                    await signOut(auth);
-                    // Devolve o acesso anónimo para ele continuar a ver os produtos públicos
-                    await signInAnonymously(auth);
-                    
-                    const errEl = document.getElementById('login-error');
-                    errEl.innerText = "Acesso negado. Email não autorizado.";
-                    errEl.classList.remove('hidden');
+                    await signOut(auth); await signInAnonymously(auth);
+                    const errEl = document.getElementById('login-error'); errEl.innerText = "Acesso negado. Email não autorizado."; errEl.classList.remove('hidden');
                 }
             } catch (error) {
                 console.error("Erro Google Login:", error);
-                const errEl = document.getElementById('login-error');
-                errEl.innerText = "Erro ao contactar a Google. Tente novamente.";
-                errEl.classList.remove('hidden');
+                const errEl = document.getElementById('login-error'); errEl.innerText = "Erro ao contactar a Google. Tente novamente."; errEl.classList.remove('hidden');
             }
         };
-
         window.closeDashboard = () => document.getElementById('dashboard-modal').classList.add('hidden');
 
-        // FUNÇÕES UX BÁSICAS
+        // UX
         window.toggleMobileMenu = () => { const sidebar = document.getElementById('sidebar-menu'); const overlay = document.getElementById('sidebar-overlay'); if (sidebar.classList.contains('-translate-x-full')) { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); setTimeout(() => overlay.classList.remove('opacity-0'), 10); } else { sidebar.classList.add('-translate-x-full'); overlay.classList.add('opacity-0'); setTimeout(() => overlay.classList.add('hidden'), 300); } };
         window.clearFilter = () => { window.currentCategoryFilter = null; window.showHome(); };
         window.filterByCategory = (cat) => { window.currentCategoryFilter = cat; window.showHome(); };
@@ -563,7 +579,7 @@
         window.showLibrary = () => { ['home-view','article-view','book-detail-view','community-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('library-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
         window.showCourses = () => { ['home-view','article-view','book-detail-view','library-view', 'community-view', 'bio-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('courses-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
         window.showCommunity = () => { ['home-view','article-view','book-detail-view','library-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('community-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
-        window.showBio = () => { ['home-view','article-view','book-detail-view','library-view', 'community-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('bio-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
+        window.showBio = () => { ['home-view','article-view','book-detail-view','library-view', 'community-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('bio-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.renderBio(); window.scrollTo(0,0); };
 
         window.toggleCategories = (e) => { if(e) e.stopPropagation(); const list = document.getElementById('categories-list'); const chevron = document.getElementById('cat-chevron'); if(list) list.classList.toggle('hidden'); if(chevron) chevron.classList.toggle('rotate-180'); };
         window.toggleCategoriesModal = (forceClose) => { const modal = document.getElementById('categories-modal'); const inner = modal.querySelector('.slide-up-animation'); if(modal.classList.contains('hidden') && !forceClose) { modal.classList.remove('hidden'); setTimeout(() => inner.classList.remove('translate-y-full'), 10); } else { inner.classList.add('translate-y-full'); setTimeout(() => modal.classList.add('hidden'), 300); } };
@@ -573,6 +589,9 @@
         window.handleSearch = (val) => { window.currentSearchQuery = val.toLowerCase(); window.renderPostsFeed(); };
         window.setSearch = (tag) => { const input = document.getElementById('search-input'); if(input) input.value = tag; window.handleSearch(tag); window.scrollTo(0,0); };
 
+        window.renderBio = () => { const bioArea = document.getElementById('bio-content-area'); if (bioArea) bioArea.innerHTML = window.siteBio || window.defaultBioText; };
+
+        // COMUNIDADE E GRUPOS
         window.renderCommunityGroups = () => {
             const list = document.getElementById('community-groups-list');
             if(!list) return;
@@ -588,47 +607,23 @@
             lucide.createIcons();
         };
 
-        window.openGroupEditor = () => {
-            const name = prompt("Nome do Grupo de Avisos (ex: VIP Ofertas):");
-            if (!name) return;
-            const link = prompt("Link de Convite do WhatsApp:");
-            if (!link) return;
-            addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), { name, link, status: 'open', createdAt: Date.now() });
-        };
-
+        window.openGroupEditor = () => { const name = prompt("Nome do Grupo de Avisos (ex: VIP Ofertas):"); if (!name) return; const link = prompt("Link de Convite do WhatsApp:"); if (!link) return; addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), { name, link, status: 'open', createdAt: Date.now() }); };
         window.deleteGroup = async (id) => { if(confirm("Apagar este grupo?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'groups', id)); };
-        
-        window.toggleGroupStatus = async (id, currentStatus) => { 
-            const newStatus = currentStatus === 'open' ? 'full' : 'open';
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'groups', id), { status: newStatus }); 
-        };
+        window.toggleGroupStatus = async (id, currentStatus) => { const newStatus = currentStatus === 'open' ? 'full' : 'open'; await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'groups', id), { status: newStatus }); };
 
         window.renderAdminGroups = () => {
             const list = document.getElementById('admin-groups-list');
             if(!list) return;
-            list.innerHTML = window.siteGroups.map(g => 
-                `<div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm">
-                    <div class="truncate mr-4">
-                        <p class="font-bold text-gray-800 truncate">${window.escapeHTML(g.name)}</p>
-                        <p class="text-xs text-gray-500 truncate">${window.escapeHTML(g.link)}</p>
-                        <p class="text-[10px] font-black mt-1 ${g.status === 'full' ? 'text-red-600' : 'text-green-600'} uppercase">${g.status === 'full' ? 'Lotado' : 'Aberto'}</p>
-                    </div>
-                    <div class="flex gap-2 shrink-0">
-                        <button onclick="window.toggleGroupStatus('${g.id}', '${g.status}')" class="p-3 bg-yellow-50 text-yellow-900 rounded-lg hover:bg-yellow-100 transition-colors cursor-pointer" title="Alternar Lotação"><i data-lucide="power" class="w-4 h-4"></i></button>
-                        <button onclick="window.deleteGroup('${g.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                </div>`
-            ).join('') || '<p class="text-center text-gray-400 py-6">Nenhum grupo criado.</p>';
+            list.innerHTML = window.siteGroups.map(g => `<div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm"><div class="truncate mr-4"><p class="font-bold text-gray-800 truncate">${window.escapeHTML(g.name)}</p><p class="text-xs text-gray-500 truncate">${window.escapeHTML(g.link)}</p><p class="text-[10px] font-black mt-1 ${g.status === 'full' ? 'text-red-600' : 'text-green-600'} uppercase">${g.status === 'full' ? 'Lotado' : 'Aberto'}</p></div><div class="flex gap-2 shrink-0"><button onclick="window.toggleGroupStatus('${g.id}', '${g.status}')" class="p-3 bg-yellow-50 text-yellow-900 rounded-lg hover:bg-yellow-100 transition-colors cursor-pointer" title="Alternar Lotação"><i data-lucide="power" class="w-4 h-4"></i></button><button onclick="window.deleteGroup('${g.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('') || '<p class="text-center text-gray-400 py-6">Nenhum grupo criado.</p>';
             lucide.createIcons();
         };
 
         const urlDisplay = document.getElementById('sidebar-url-display');
         if (urlDisplay) urlDisplay.innerText = window.location.host + window.location.pathname;
-        
         window.getDriveImageUrl = (url) => { if (!url) return ""; const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/); return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : url; };
         window.getYoutubeId = (url) => { const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; };
 
-        // FEED SEGURO COM XSS ESCAPED
+        // FEED E PESQUISA
         window.renderPostsFeed = () => {
             const header = document.getElementById('feed-header'); const container = document.getElementById('feed-container'); 
             const hTitle = window.escapeHTML(window.siteConfig?.homeTitle || "NEGO de GV");
@@ -693,21 +688,13 @@
 
         window.registerView = async (id) => {
             let viewed = JSON.parse(localStorage.getItem('plh_viewed_posts') || '[]');
-            if (!viewed.includes(id)) {
-                try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id), { views: increment(1) });
-                    viewed.push(id);
-                    localStorage.setItem('plh_viewed_posts', JSON.stringify(viewed));
-                } catch(e) { console.error("Erro ao registrar view", e); }
-            }
+            if (!viewed.includes(id)) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id), { views: increment(1) }); viewed.push(id); localStorage.setItem('plh_viewed_posts', JSON.stringify(viewed)); } catch(e) { console.error("Erro ao registrar view", e); } }
         };
 
         window.openArticle = (id) => { 
             const p = window.blogPosts.find(x => x.id === id); if (!p) return; 
             ['home-view','library-view','book-detail-view','community-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(i=>document.getElementById(i).classList.add('hidden')); 
-            document.getElementById('article-view').classList.remove('hidden'); 
-            window.scrollTo(0, 0); 
-            window.registerView(id);
+            document.getElementById('article-view').classList.remove('hidden'); window.scrollTo(0, 0); window.registerView(id);
             const ytId = window.getYoutubeId(p.youtubeUrl); 
             const mediaHtml = ytId ? `<div class="aspect-video rounded-3xl overflow-hidden mb-8 shadow-2xl bg-black"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe></div>` : `<div class="aspect-video rounded-3xl overflow-hidden mb-8 shadow-xl"><img src="${window.escapeHTML(p.imageUrl || 'https://via.placeholder.com/800x450?text=Artigo')}" class="w-full h-full object-cover"></div>`; 
             document.getElementById('article-content').innerHTML = `${mediaHtml}<div class="px-2"><h1 class="text-4xl sm:text-6xl font-black mb-6 leading-tight tracking-tight sys-text-primary">${window.escapeHTML(p.title)}</h1><p class="text-xl sm:text-2xl opacity-80 mb-10 pb-10 sys-border border-b font-medium italic sys-text-secondary">${window.escapeHTML(p.subtitle)}</p><div class="prose max-w-none leading-relaxed">${p.fullText}</div></div>`; 
@@ -723,7 +710,45 @@
             lucide.createIcons(); 
         };
 
-        // RENDER ADMIN
+        // RENDERIZAÇÃO DE PRODUTOS (VITRINE) E SERVIÇOS
+        window.renderCourses = () => {
+            const container = document.getElementById('courses-container');
+            container.innerHTML = window.siteCourses.map(c => `<div onclick="window.openCourseDetail('${c.id}')" class="flex flex-col group sys-bg-surface rounded-2xl shadow-sm sys-border border overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer relative z-10"><div class="aspect-[2/3] bg-gray-100 relative overflow-hidden border-b sys-border"><img src="${window.escapeHTML(window.getDriveImageUrl(c.cover))}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x600?text=Capa'"></div><div class="p-4 flex flex-col flex-grow items-center text-center"><h3 class="font-black sys-text-primary text-sm sm:text-base leading-snug mb-1 group-hover:sys-text-accent transition-colors line-clamp-2">${window.escapeHTML(c.title)}</h3><p class="text-xs sys-text-secondary line-clamp-2 mt-1 opacity-80">${window.escapeHTML(c.subtitle || '')}</p><p class="text-[10px] sys-text-secondary font-bold uppercase tracking-wider mt-auto pt-3 border-t sys-border border-dashed w-full">${window.escapeHTML(c.workload || 'Produto')}</p></div></div>`).join('') || '<div class="col-span-full py-20 text-center flex flex-col items-center justify-center opacity-60"><p class="sys-text-secondary font-bold">Nenhum produto cadastrado.</p></div>';
+            lucide.createIcons();
+        };
+
+        window.renderLibrary = () => {
+            const container = document.getElementById('library-container');
+            container.innerHTML = window.siteBooks.map(b => `<div onclick="window.openBookDetail('${b.id}')" class="flex flex-col group sys-bg-surface rounded-2xl shadow-sm sys-border border overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer relative z-10"><div class="aspect-[2/3] bg-gray-100 relative overflow-hidden border-b sys-border"><img src="${window.escapeHTML(window.getDriveImageUrl(b.cover))}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://via.placeholder.com/400x600?text=Capa'"></div><div class="p-4 flex flex-col flex-grow items-center text-center"><h3 class="font-black sys-text-primary text-sm sm:text-base leading-snug mb-1 group-hover:sys-text-accent transition-colors line-clamp-2">${window.escapeHTML(b.title)}</h3><p class="text-xs sys-text-secondary line-clamp-2 mt-1 opacity-80">${window.escapeHTML(b.subtitle || '')}</p><p class="text-[10px] sys-text-secondary font-bold uppercase tracking-wider mt-auto pt-3 border-t sys-border border-dashed w-full">${window.escapeHTML(b.pages || 'Serviço')}</p></div></div>`).join('') || '<div class="col-span-full py-20 text-center flex flex-col items-center justify-center opacity-60"><p class="sys-text-secondary font-bold">Nenhum serviço cadastrado.</p></div>';
+            lucide.createIcons();
+        };
+
+        window.openCourseDetail = (id) => {
+            window.currentOpenCourseId = id; ['home-view','library-view','article-view','community-view', 'bio-view', 'courses-view', 'book-detail-view'].forEach(i=>document.getElementById(i).classList.add('hidden')); document.getElementById('course-detail-view').classList.remove('hidden'); window.scrollTo(0, 0); 
+            const c = window.siteCourses.find(x=>x.id===id); if(!c) return;
+            
+            let buttonsHtml = '';
+            if(c.hasPresential) buttonsHtml += `<a href="${c.linkPresential || '#'}" target="_blank" class="w-full flex justify-center items-center gap-2 sys-bg-accent text-white py-4 px-6 rounded-xl font-black text-sm uppercase tracking-wide hover:opacity-90 shadow-xl transition-all hover:-translate-y-1 mb-3 cursor-pointer">${c.btnPresential || 'Reservar'} <i data-lucide="check-circle-2" class="w-4 h-4"></i></a>`;
+            if(c.hasOnline) buttonsHtml += `<a href="${c.linkOnline || '#'}" target="_blank" class="w-full flex justify-center items-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-black text-sm uppercase tracking-wide shadow-xl transition-all hover:-translate-y-1 mb-3 cursor-pointer"><i data-lucide="shopping-cart" class="w-4 h-4"></i> ${c.btnOnline || 'Pedir Agora'}</a>`;
+
+            document.getElementById('course-detail-content').innerHTML = `<div class="flex flex-col md:flex-row gap-8 lg:gap-12 mb-12"><div class="w-full md:w-1/3 flex flex-col gap-6"><div class="aspect-[2/3] w-[90%] mx-auto md:w-full rounded-2xl overflow-hidden shadow-2xl sys-border border"><img src="${window.escapeHTML(window.getDriveImageUrl(c.cover))}" class="w-full h-full object-cover"></div></div><div class="w-full md:w-2/3 flex flex-col"><h1 class="text-3xl sm:text-4xl font-black sys-text-primary leading-tight mb-2">${window.escapeHTML(c.title)}</h1><p class="sys-text-secondary font-bold text-sm mb-6">${window.escapeHTML(c.workload || '')}</p><div class="prose max-w-none sys-text-primary text-base sm:text-lg opacity-90 leading-relaxed mb-8 whitespace-pre-wrap">${c.fullText || ''}</div><div class="flex flex-col mt-auto border-t sys-border pt-8">${buttonsHtml}</div></div></div>`;
+            lucide.createIcons();
+        };
+
+        window.openBookDetail = (id) => {
+            window.currentOpenBookId = id; ['home-view','library-view','article-view','community-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(i=>document.getElementById(i).classList.add('hidden')); document.getElementById('book-detail-view').classList.remove('hidden'); window.scrollTo(0, 0); 
+            const b = window.siteBooks.find(x=>x.id===id); if(!b) return;
+            
+            let buttonsHtml = '';
+            if(b.hasPhysical) buttonsHtml += `<a href="${b.linkPhysical || '#'}" target="_blank" class="w-full flex justify-center items-center gap-2 sys-bg-accent text-white py-4 px-6 rounded-xl font-black text-sm uppercase tracking-wide hover:opacity-90 shadow-xl transition-all hover:-translate-y-1 mb-3 cursor-pointer">${b.btnPhysical || 'Agendar'} <i data-lucide="calendar" class="w-4 h-4"></i></a>`;
+            if(b.hasEbook) buttonsHtml += `<a href="${b.linkEbook || '#'}" target="_blank" class="w-full flex justify-center items-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-black text-sm uppercase tracking-wide shadow-xl transition-all hover:-translate-y-1 mb-3 cursor-pointer"><i data-lucide="message-circle" class="w-4 h-4"></i> ${b.btnEbook || 'Pedir Orçamento'}</a>`;
+
+            document.getElementById('book-detail-content').innerHTML = `<div class="flex flex-col md:flex-row gap-8 lg:gap-12 mb-12"><div class="w-full md:w-1/3 flex flex-col gap-6"><div class="aspect-[2/3] w-[90%] mx-auto md:w-full rounded-2xl overflow-hidden shadow-2xl sys-border border"><img src="${window.escapeHTML(window.getDriveImageUrl(b.cover))}" class="w-full h-full object-cover"></div></div><div class="w-full md:w-2/3 flex flex-col"><h1 class="text-3xl sm:text-4xl font-black sys-text-primary leading-tight mb-2">${window.escapeHTML(b.title)}</h1><p class="sys-text-secondary font-bold text-sm mb-6">${window.escapeHTML(b.pages || '')}</p><div class="prose max-w-none sys-text-primary text-base sm:text-lg opacity-90 leading-relaxed mb-8 whitespace-pre-wrap">${b.fullText || ''}</div><div class="flex flex-col mt-auto border-t sys-border pt-8">${buttonsHtml}</div></div></div>`;
+            lucide.createIcons();
+        };
+
+
+        // RENDER E GESTÃO ADMIN GERAL
         window.renderAdminList = () => {
             const list = document.getElementById('admin-posts-list');
             const now = Date.now();
@@ -733,22 +758,20 @@
                 const viewsCount = p.views || 0;
                 const typeLabel = p.type === 'page' ? 'Artigo' : 'Oferta';
 
-                return `
-                <div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm ${isExpired ? 'opacity-60' : ''}">
-                    <div class="truncate mr-4 flex flex-col gap-1 min-w-0">
-                        <span class="font-bold text-gray-800 truncate text-sm sm:text-base">${window.escapeHTML(p.title)}</span>
-                        <div class="flex items-center gap-2 mt-1">
-                            ${statusBadge}
-                            <span class="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-1"><i data-lucide="layout-template" class="w-3 h-3"></i> ${typeLabel}</span>
-                            <span class="text-[10px] font-bold text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-full"><i data-lucide="eye" class="w-3 h-3"></i> ${viewsCount} Visitas</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 shrink-0">
-                        <button onclick="window.editPost('${p.id}')" class="p-3 bg-blue-50 text-blue-900 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                        <button onclick="window.deletePost('${p.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                </div>`;
+                return `<div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm ${isExpired ? 'opacity-60' : ''}"><div class="truncate mr-4 flex flex-col gap-1 min-w-0"><span class="font-bold text-gray-800 truncate text-sm sm:text-base">${window.escapeHTML(p.title)}</span><div class="flex items-center gap-2 mt-1">${statusBadge}<span class="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-1"><i data-lucide="layout-template" class="w-3 h-3"></i> ${typeLabel}</span><span class="text-[10px] font-bold text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-full"><i data-lucide="eye" class="w-3 h-3"></i> ${viewsCount} Visitas</span></div></div><div class="flex gap-2 shrink-0"><button onclick="window.editPost('${p.id}')" class="p-3 bg-blue-50 text-blue-900 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="window.deletePost('${p.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
             }).join('') || '<p class="text-center text-gray-400 py-6">Nenhum conteúdo.</p>';
+            lucide.createIcons();
+        };
+
+        window.renderAdminCourses = () => { const list = document.getElementById('admin-courses-list'); list.innerHTML = window.siteCourses.map(c => `<div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl bg-white shadow-sm"><span class="font-bold text-gray-800 truncate">${window.escapeHTML(c.title)}</span><div class="flex gap-2 shrink-0"><button onclick="window.editCourse('${c.id}')" class="p-3 bg-blue-50 text-purple-900 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="window.deleteCourse('${c.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('') || '<p class="col-span-full text-center text-gray-400 py-6">Nenhum produto.</p>'; lucide.createIcons(); };
+        window.renderAdminBooks = () => { const list = document.getElementById('admin-books-list'); list.innerHTML = window.siteBooks.map(b => `<div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl bg-white shadow-sm"><span class="font-bold text-gray-800 truncate">${window.escapeHTML(b.title)}</span><div class="flex gap-2 shrink-0"><button onclick="window.editBook('${b.id}')" class="p-3 bg-blue-50 text-green-900 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="window.deleteBook('${b.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('') || '<p class="col-span-full text-center text-gray-400 py-6">Nenhum serviço.</p>'; lucide.createIcons(); };
+        
+        window.createCategory = async () => { const input = document.getElementById('new-category-input'); const name = input.value.trim(); if(name) { await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'categories'), { name, createdAt: Date.now() }); input.value = ''; } };
+        window.deleteCategory = async (id) => { if(confirm("Excluir definitivamente?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', id)); };
+        window.editCategory = async (id, oldName) => { const newName = prompt("Renomear para:", oldName); if(newName && newName.trim() !== "" && newName !== oldName) { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'categories', id), { name: newName.trim() }); } };
+        window.renderAdminCategories = () => {
+            const list = document.getElementById('admin-categories-list');
+            list.innerHTML = window.siteCategories.map(c => `<div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm"><span class="font-bold text-gray-800">${window.escapeHTML(c.name)}</span><div class="flex gap-2"><button onclick="window.editCategory('${c.id}', '${window.escapeHTML(c.name).replace(/'/g, "\\'")}')" class="p-3 bg-blue-50 text-blue-900 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="window.deleteCategory('${c.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('') || '<p class="text-center text-gray-400 py-6">Vazio.</p>';
             lucide.createIcons();
         };
 
@@ -760,10 +783,15 @@
             document.getElementById('admin-view-'+tab).classList.remove('hidden');
             document.getElementById('tab-btn-'+tab).className = "pb-3 text-sm font-black text-blue-900 border-b-2 border-blue-900 transition-colors focus:outline-none whitespace-nowrap cursor-pointer";
             if(tab === 'posts') window.renderAdminList(); 
+            if(tab === 'courses') window.renderAdminCourses();
+            if(tab === 'books') window.renderAdminBooks();
+            if(tab === 'categories') window.renderAdminCategories();
             if(tab === 'config') window.renderAdminConfig();
             if(tab === 'community') window.renderAdminGroups();
+            if(tab === 'bio') { window.currentEditorId = 'bio-fulltext'; document.getElementById('bio-fulltext').innerHTML = window.siteBio || window.defaultBioText; }
         };
 
+        // GESTÃO DE OFERTAS
         window.openEditor = () => { 
             window.currentEditorId = 'post-fulltext';
             const dbCats = window.siteCategories.map(c => c.name); const postCats = window.blogPosts.map(p => p.category).filter(c => c && c.trim() !== ''); const allCats = [...new Set([...dbCats, ...postCats])].sort();
@@ -793,7 +821,24 @@
         };
         window.deletePost = async (id, fromEditor = false) => { if (confirm("Excluir conteúdo?")) { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id)); if (fromEditor) window.closeEditor(); } };
 
-        // CONFIGURAÇÕES
+        // GESTÃO DE PRODUTOS
+        window.toggleCourseFormats = () => { const hp = document.getElementById('course-has-presential').checked; const ho = document.getElementById('course-has-online').checked; document.getElementById('course-presential-fields').className = hp ? "flex flex-col gap-2" : "flex flex-col gap-2 opacity-50 pointer-events-none"; ['price','btn','link'].forEach(f=>document.getElementById(`course-${f}-presential`).disabled = !hp); document.getElementById('course-online-fields').className = ho ? "flex flex-col gap-2" : "flex flex-col gap-2 opacity-50 pointer-events-none"; ['price','btn','link'].forEach(f=>document.getElementById(`course-${f}-online`).disabled = !ho); };
+        window.openCourseEditor = () => { window.currentEditorId = 'course-fulltext'; document.getElementById('edit-course-id').value = ''; document.getElementById('course-has-presential').checked = false; document.getElementById('course-has-online').checked = true; window.toggleCourseFormats(); ['title','subtitle','workload','cover','price-presential','btn-presential','link-presential','price-online','btn-online','link-online'].forEach(f=>{let el=document.getElementById(`course-${f}`); if(el)el.value='';}); document.getElementById('course-fulltext').innerHTML = ''; document.getElementById('btn-delete-course').classList.add('hidden'); document.getElementById('course-editor-modal').classList.remove('hidden'); };
+        window.closeCourseEditor = () => document.getElementById('course-editor-modal').classList.add('hidden');
+        window.saveCourse = async () => { const id = document.getElementById('edit-course-id').value; const hp = document.getElementById('course-has-presential').checked; const ho = document.getElementById('course-has-online').checked; const data = { title: document.getElementById('course-title').value, subtitle: document.getElementById('course-subtitle').value, workload: document.getElementById('course-workload').value, cover: document.getElementById('course-cover').value, fullText: document.getElementById('course-fulltext').innerHTML, hasPresential: hp, pricePresential: hp?document.getElementById('course-price-presential').value:"", btnPresential: hp?document.getElementById('course-btn-presential').value:"", linkPresential: hp?document.getElementById('course-link-presential').value:"", hasOnline: ho, priceOnline: ho?document.getElementById('course-price-online').value:"", btnOnline: ho?document.getElementById('course-btn-online').value:"", linkOnline: ho?document.getElementById('course-link-online').value:"" }; try { if(id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'courses', id), data); else await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'courses'), {...data, createdAt: Date.now()}); window.closeCourseEditor(); } catch(e){alert(e.message);} };
+        window.editCourse = (id) => { window.currentEditorId = 'course-fulltext'; const c = window.siteCourses.find(x=>x.id===id); document.getElementById('edit-course-id').value = c.id; document.getElementById('course-has-presential').checked = c.hasPresential||false; document.getElementById('course-has-online').checked = c.hasOnline!==undefined?c.hasOnline:true; window.toggleCourseFormats(); document.getElementById('course-title').value = c.title||''; document.getElementById('course-subtitle').value = c.subtitle||''; document.getElementById('course-workload').value = c.workload||''; document.getElementById('course-cover').value = c.cover||''; document.getElementById('course-price-presential').value = c.pricePresential||''; document.getElementById('course-btn-presential').value = c.btnPresential||''; document.getElementById('course-link-presential').value = c.linkPresential||''; document.getElementById('course-price-online').value = c.priceOnline||''; document.getElementById('course-btn-online').value = c.btnOnline||''; document.getElementById('course-link-online').value = c.linkOnline||''; document.getElementById('course-fulltext').innerHTML = c.fullText||''; document.getElementById('btn-delete-course').classList.remove('hidden'); document.getElementById('course-editor-modal').classList.remove('hidden'); };
+        window.deleteCourse = async (id) => { if(confirm("Excluir produto?")){ await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'courses', id)); window.closeCourseEditor(); } };
+
+        // GESTÃO DE SERVIÇOS
+        window.toggleBookFormats = () => { const hp = document.getElementById('book-has-physical').checked; const ho = document.getElementById('book-has-ebook').checked; document.getElementById('book-physical-fields').className = hp ? "flex flex-col gap-2" : "flex flex-col gap-2 opacity-50 pointer-events-none"; ['price','btn','link'].forEach(f=>document.getElementById(`book-${f}-physical`).disabled = !hp); document.getElementById('book-ebook-fields').className = ho ? "flex flex-col gap-2" : "flex flex-col gap-2 opacity-50 pointer-events-none"; ['price','btn','link'].forEach(f=>document.getElementById(`book-${f}-ebook`).disabled = !ho); };
+        window.openBookEditor = () => { window.currentEditorId = 'book-fulltext'; document.getElementById('edit-book-id').value = ''; document.getElementById('book-has-physical').checked = false; document.getElementById('book-has-ebook').checked = true; window.toggleBookFormats(); ['title','subtitle','pages','cover','price-physical','btn-physical','link-physical','price-ebook','btn-ebook','link-ebook'].forEach(f=>{let el=document.getElementById(`book-${f}`); if(el)el.value='';}); document.getElementById('book-fulltext').innerHTML = ''; document.getElementById('btn-delete-book').classList.add('hidden'); document.getElementById('book-editor-modal').classList.remove('hidden'); };
+        window.closeBookEditor = () => document.getElementById('book-editor-modal').classList.add('hidden');
+        window.saveBook = async () => { const id = document.getElementById('edit-book-id').value; const hp = document.getElementById('book-has-physical').checked; const ho = document.getElementById('book-has-ebook').checked; const data = { title: document.getElementById('book-title').value, subtitle: document.getElementById('book-subtitle').value, pages: document.getElementById('book-pages').value, cover: document.getElementById('book-cover').value, fullText: document.getElementById('book-fulltext').innerHTML, hasPhysical: hp, pricePhysical: hp?document.getElementById('book-price-physical').value:"", btnPhysical: hp?document.getElementById('book-btn-physical').value:"", linkPhysical: hp?document.getElementById('book-link-physical').value:"", hasEbook: ho, priceEbook: ho?document.getElementById('book-price-ebook').value:"", btnEbook: ho?document.getElementById('book-btn-ebook').value:"", linkEbook: ho?document.getElementById('book-link-ebook').value:"" }; try { if(id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'books', id), data); else await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'books'), {...data, createdAt: Date.now()}); window.closeBookEditor(); } catch(e){alert(e.message);} };
+        window.editBook = (id) => { window.currentEditorId = 'book-fulltext'; const b = window.siteBooks.find(x=>x.id===id); document.getElementById('edit-book-id').value = b.id; document.getElementById('book-has-physical').checked = b.hasPhysical||false; document.getElementById('book-has-ebook').checked = b.hasEbook!==undefined?b.hasEbook:true; window.toggleBookFormats(); document.getElementById('book-title').value = b.title||''; document.getElementById('book-subtitle').value = b.subtitle||''; document.getElementById('book-pages').value = b.pages||''; document.getElementById('book-cover').value = b.cover||''; document.getElementById('book-price-physical').value = b.pricePhysical||''; document.getElementById('book-btn-physical').value = b.btnPhysical||''; document.getElementById('book-link-physical').value = b.linkPhysical||''; document.getElementById('book-price-ebook').value = b.priceEbook||''; document.getElementById('book-btn-ebook').value = b.btnEbook||''; document.getElementById('book-link-ebook').value = b.linkEbook||''; document.getElementById('book-fulltext').innerHTML = b.fullText||b.desc||''; document.getElementById('btn-delete-book').classList.remove('hidden'); document.getElementById('book-editor-modal').classList.remove('hidden'); };
+        window.deleteBook = async (id) => { if(confirm("Excluir serviço?")){ await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'books', id)); window.closeBookEditor(); } };
+
+        // CONFIGURAÇÕES E SALVAR BIO
+        window.saveBio = async () => { try { window.showToast("A Guardar biografia..."); await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'bio'), { fullText: document.getElementById('bio-fulltext').innerHTML }); window.showToast("Biografia guardada!"); } catch(e) { alert("Erro: " + e.message); } };
         window.renderAdminConfig = () => {
             document.getElementById('config-app-name').value = window.siteConfig?.appName || "NEGO de GV";
             document.getElementById('config-app-logo').value = window.siteConfig?.appLogo || "";
@@ -820,7 +865,10 @@
         };
 
         window.execEditor = (cmd, val = null) => { document.execCommand(cmd, false, val); const el = document.getElementById(window.currentEditorId || 'post-fulltext'); if(el) el.focus(); };
-        window.insertEditorButton = () => { const text = prompt("Texto do botão:"); if (!text) return; const url = prompt("Link do WhatsApp:"); if (!url) return; const safeUrl = url.startsWith('http') ? url : 'https://' + url; window.execEditor('insertHTML', `<div class="my-8 flex justify-center"><a href="${safeUrl}" target="_blank" class="bg-green-600 font-black text-sm sm:text-base py-4 px-10 rounded-full shadow-2xl transition-all hover:scale-105 uppercase tracking-wide" style="color: #ffffff !important; text-decoration: none !important;">${window.escapeHTML(text)}</a></div><p><br></p>`); };
+        window.insertEditorLink = () => { const url = prompt("URL:"); if(url) window.execEditor('createLink', url); };
+        window.insertEditorImage = () => { const url = prompt("Link da imagem:"); if (url) window.execEditor('insertHTML', `<img src="${window.escapeHTML(window.getDriveImageUrl(url))}" class="w-full rounded-xl my-4 shadow-sm" />`); };
+        window.insertEditorVideo = () => { const url = prompt("Link do YouTube:"); const id = window.getYoutubeId(url); if (id) window.execEditor('insertHTML', `<div class="aspect-video w-full rounded-xl overflow-hidden my-4 shadow-sm"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${window.escapeHTML(id)}" frameborder="0" allowfullscreen></iframe></div>`); };
+        window.insertEditorButton = () => { const text = prompt("Texto do botão:"); if (!text) return; const url = prompt("Link do WhatsApp:"); if (!url) return; const safeUrl = url.startsWith('http') ? url : 'https://' + url; window.execEditor('insertHTML', `<div class="my-8 flex justify-center"><a href="${window.escapeHTML(safeUrl)}" target="_blank" class="bg-green-600 font-black text-sm sm:text-base py-4 px-10 rounded-full shadow-2xl transition-all hover:scale-105 uppercase tracking-wide" style="color: #ffffff !important; text-decoration: none !important;">${window.escapeHTML(text)}</a></div><p><br></p>`); };
 
         lucide.createIcons();
     </script>
