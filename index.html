@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    
+    <title id="page-title">NEGO de GV</title>
+    
+    <meta property="og:title" content="NEGO de GV">
+    <meta property="og:description" content="Os melhores NEGÓCIOS, serviços e entregas da nossa cidade.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <link id="favicon" rel="icon" type="image/png" href="./foto-compartilhamento.png">
+    
+    <meta name="theme-color" content="#1e3a8a" id="meta-theme-color">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link id="apple-touch-icon" rel="apple-touch-icon" href="./foto-compartilhamento.png">
+
+    <script>
+        let savedTheme = localStorage.getItem('site-theme') || 'light';
+        const savedFontSize = localStorage.getItem('site-font-size') || 'normal';
+        document.documentElement.classList.add('theme-' + savedTheme);
+        document.documentElement.classList.add('font-size-' + savedFontSize);
+
+        window.updateAppManifest = (config) => {
+            const appName = config?.appName || "NEGO de GV";
+            const shortName = config?.appName ? config.appName.substring(0, 12) : "NEGO";
+            const themeColor = config?.defaultTheme === 'dark' ? '#1f2937' : '#1e3a8a';
+            const bgColor = config?.defaultTheme === 'dark' ? '#111827' : '#f3f4f6';
+            
+            let iconUrl = "./foto-compartilhamento.png";
+            if (config?.appLogo) {
+                const match = config.appLogo.match(/\/d\/([a-zA-Z0-9_-]+)/) || config.appLogo.match(/id=([a-zA-Z0-9_-]+)/);
+                iconUrl = match ? `https://lh3.googleusercontent.com/d/${match[1]}` : config.appLogo;
+            }
+            
+            const favicon = document.getElementById('favicon');
+            if (favicon) favicon.href = iconUrl;
+            const appleIcon = document.getElementById('apple-touch-icon');
+            if (appleIcon) appleIcon.href = iconUrl;
+
+            const manifest = {
+                name: appName, short_name: shortName, start_url: window.location.pathname,
+                display: "standalone", background_color: bgColor, theme_color: themeColor,
+                icons: [ { src: iconUrl, sizes: "192x192", type: "image/png" }, { src: iconUrl, sizes: "512x512", type: "image/png" } ]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/manifest+json'});
+            let link = document.getElementById('app-manifest-link');
+            if (!link) { link = document.createElement('link'); link.id = 'app-manifest-link'; link.rel = 'manifest'; document.head.appendChild(link); }
+            link.href = URL.createObjectURL(manifestBlob);
+
+            document.getElementById('meta-theme-color').content = themeColor;
+            document.getElementById('page-title').innerText = appName;
+        };
+
+        window.addEventListener('load', () => {
+            if ('serviceWorker' in navigator) {
+                const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});`;
+                const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+            }
+            window.updateAppManifest(null);
+        });
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            const btn = document.getElementById('install-btn'); const btnMob = document.getElementById('install-btn-mobile');
+            if(btn) btn.classList.remove('hidden'); if(btnMob) btnMob.classList.remove('hidden');
+        });
+
+        window.installApp = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    const btn = document.getElementById('install-btn'); const btnMob = document.getElementById('install-btn-mobile');
+                    if(btn) btn.classList.add('hidden'); if(btnMob) btnMob.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        };
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        /* CORREÇÃO CRÍTICA iOS: Evita que ícones bloqueiem cliques */
+        [data-lucide], svg.lucide { pointer-events: none; }
+        
+        :root, html.theme-light { --sys-bg-body: #f3f4f6; --sys-bg-surface: #ffffff; --sys-text-primary: #111827; --sys-text-secondary: #6b7280; --sys-border: #e5e7eb; --sys-accent: #1e3a8a; }
+        html.theme-dark { --sys-bg-body: #111827; --sys-bg-surface: #1f2937; --sys-text-primary: #f9fafb; --sys-text-secondary: #9ca3af; --sys-border: #374151; --sys-accent: #60a5fa; }
+        html.theme-polen { --sys-bg-body: #e8e0c5; --sys-bg-surface: #f4ecd8; --sys-text-primary: #453521; --sys-text-secondary: #7a6347; --sys-border: #d1c4a5; --sys-accent: #92400e; }
+        html.theme-cafe { --sys-bg-body: #2b2121; --sys-bg-surface: #3c2f2f; --sys-text-primary: #e7d8c9; --sys-text-secondary: #bda792; --sys-border: #524040; --sys-accent: #fcd34d; }
+        html.theme-verde { --sys-bg-body: #022c22; --sys-bg-surface: #064e3b; --sys-text-primary: #ffffff; --sys-text-secondary: #a7f3d0; --sys-border: #065f46; --sys-accent: #34d399; }
+        html.theme-azul { --sys-bg-body: #172554; --sys-bg-surface: #1e3a8a; --sys-text-primary: #ffffff; --sys-text-secondary: #bfdbfe; --sys-border: #1e40af; --sys-accent: #93c5fd; }
+        html.theme-vermelho { --sys-bg-body: #450a0a; --sys-bg-surface: #7f1d1d; --sys-text-primary: #ffffff; --sys-text-secondary: #fecaca; --sys-border: #991b1b; --sys-accent: #fca5a5; }
+
+        .sys-bg-body { background-color: var(--sys-bg-body); transition: background-color 0.4s ease; }
+        .sys-bg-surface { background-color: var(--sys-bg-surface); transition: background-color 0.4s ease; }
+        .sys-text-primary { color: var(--sys-text-primary); transition: color 0.4s ease; }
+        .sys-text-secondary { color: var(--sys-text-secondary); transition: color 0.4s ease; }
+        .sys-border { border-color: var(--sys-border); transition: border-color 0.4s ease; }
+        .sys-text-accent { color: var(--sys-accent); transition: color 0.4s ease; }
+        .sys-bg-accent { background-color: var(--sys-accent); color: #fff; transition: background-color 0.4s ease; }
+
+        .prose, .prose h1, .prose h2, .prose h3, .prose h4, .prose blockquote, .prose strong, .prose b { color: var(--sys-text-primary) !important; }
+        .prose a { color: var(--sys-accent) !important; }
+
+        html.font-size-normal { font-size: 16px; } html.font-size-large { font-size: 18px; } html.font-size-xlarge { font-size: 20px; }
+        .faq-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease-out; }
+        .faq-content.open { grid-template-rows: 1fr; } .faq-content-inner { overflow: hidden; }
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); }
+        .hidden { display: none !important; } .fade-enter { animation: fadeIn 0.4s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .floating-btn { position: fixed; bottom: 24px; right: 24px; z-index: 40; transition: all 0.3s ease; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .slide-up-animation { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="sys-bg-body sys-text-primary font-sans antialiased min-h-screen flex flex-col lg:pl-[280px]">
+
+    <header class="sys-bg-surface shadow-sm sticky top-0 z-20 flex-shrink-0 sys-border border-b">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button onclick="window.toggleMobileMenu()" class="p-2 -ml-2 sys-text-secondary hover:sys-text-accent focus:outline-none rounded-lg transition-colors lg:hidden cursor-pointer" title="Abrir Menu">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <a href="#" onclick="window.clearFilter(); window.showHome(); return false;" class="text-xl sm:text-2xl font-black tracking-tight sys-text-accent flex items-center gap-3 truncate hover:opacity-80 transition-opacity">
+                    <img id="header-app-logo" src="./foto-compartilhamento.png" onerror="this.src='https://via.placeholder.com/64?text=Logo'" alt="Logo" class="w-9 h-9 rounded-full object-cover border-2 sys-border shrink-0 shadow-sm">
+                    <span id="header-app-name" class="truncate">NEGO de GV</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button id="install-btn" onclick="window.installApp()" class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-blue-900 text-white text-sm font-bold rounded-lg hover:bg-blue-800 transition-colors shadow-sm cursor-pointer">
+                    <i data-lucide="download" class="w-4 h-4"></i> App
+                </button>
+                <button onclick="window.cycleFontSize()" class="p-2 sys-text-secondary hover:sys-text-accent rounded-lg transition-colors cursor-pointer" title="Tamanho da Letra"><i data-lucide="type" class="w-5 h-5"></i></button>
+                <div class="relative">
+                    <button onclick="window.toggleThemeMenu(event)" class="p-2 sys-text-secondary hover:sys-text-accent rounded-lg transition-colors cursor-pointer" title="Temas"><i data-lucide="palette" class="w-5 h-5"></i></button>
+                    <div id="theme-menu" class="hidden absolute right-0 mt-2 w-48 sys-bg-surface sys-border border rounded-xl shadow-2xl py-2 z-50">
+                        <button onclick="window.setSiteTheme('light', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Claro</button>
+                        <button onclick="window.setSiteTheme('dark', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Escuro</button>
+                        <button onclick="window.setSiteTheme('polen', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Pólen</button>
+                        <button onclick="window.setSiteTheme('cafe', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Café</button>
+                        <button onclick="window.setSiteTheme('verde', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Verde</button>
+                        <button onclick="window.setSiteTheme('azul', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Azul</button>
+                        <button onclick="window.setSiteTheme('vermelho', true)" class="w-full text-left px-4 py-3 text-sm sys-text-primary hover:opacity-70 flex items-center gap-3 cursor-pointer">Vermelho</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="sidebar-overlay" onclick="window.toggleMobileMenu()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden transition-opacity opacity-0 duration-300 lg:hidden cursor-pointer"></div>
+
+    <aside id="sidebar-menu" class="fixed top-0 left-0 h-full w-[280px] sys-bg-surface shadow-2xl lg:shadow-[4px_0_24px_rgba(0,0,0,0.04)] z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col border-r sys-border">
+        <div class="p-6 flex justify-between items-center sys-border border-b bg-gray-50/5 sys-bg-body">
+            <span class="font-black text-xl sys-text-primary flex items-center gap-2"><i data-lucide="compass" class="w-6 h-6 sys-text-accent"></i> Menu</span>
+            <button onclick="window.toggleMobileMenu()" class="p-2 rounded-full sys-bg-surface sys-border border transition-colors lg:hidden cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6">
+            <a href="#" onclick="window.clearFilter(); window.showHome(); window.toggleMobileMenu(); return false;" class="flex items-center gap-4 font-bold text-lg sys-text-primary hover:sys-text-accent transition-colors"><i data-lucide="tag" class="w-5 h-5"></i> Ofertas Locais</a>
+            <a href="#" onclick="window.showCourses(); window.toggleMobileMenu(); return false;" class="flex items-center gap-4 font-bold text-lg sys-text-primary hover:sys-text-accent transition-colors"><i data-lucide="shopping-bag" class="w-5 h-5"></i> Produtos</a>
+            <a href="#" onclick="window.showLibrary(); window.toggleMobileMenu(); return false;" class="flex items-center gap-4 font-bold text-lg sys-text-primary hover:sys-text-accent transition-colors"><i data-lucide="briefcase" class="w-5 h-5"></i> Serviços</a>
+            
+            <div class="flex flex-col gap-2 mt-2">
+                <p class="text-[10px] font-black uppercase tracking-widest sys-text-secondary mb-2 pl-1">Lojas e Negócios</p>
+                <button onclick="window.toggleCategories(event)" class="flex items-center justify-between w-full text-left sys-text-primary hover:sys-text-accent font-bold text-lg transition-colors py-1 cursor-pointer">
+                    <span class="flex items-center gap-4"><i data-lucide="store" class="w-5 h-5"></i> Ver Lojas</span>
+                    <i data-lucide="chevron-down" id="cat-chevron" class="w-4 h-4 transition-transform duration-300"></i>
+                </button>
+                <div id="categories-list" class="hidden flex-col pl-10 mt-1 gap-3 sys-text-secondary border-l-2 sys-border ml-2"></div>
+            </div>
+            
+            <a href="#" onclick="window.showBio(); window.toggleMobileMenu(); return false;" class="flex items-center gap-4 font-bold text-lg sys-text-primary hover:sys-text-accent transition-colors mt-2"><i data-lucide="info" class="w-5 h-5"></i> Sobre o App</a>
+            <a href="#" onclick="window.showCommunity(); window.toggleMobileMenu(); return false;" class="flex items-center gap-4 font-bold text-lg text-green-600 hover:text-green-700 transition-colors mt-2"><i data-lucide="bell" class="w-5 h-5"></i> Receber Avisos</a>
+            
+            <div class="mt-2 pt-4 border-t sys-border flex flex-col gap-2">
+                <p class="text-[10px] font-black uppercase tracking-widest sys-text-secondary pl-1">Partilhar Guia Local</p>
+                <button onclick="window.copyAppUrl()" class="w-full flex items-center justify-between gap-2 p-3 sys-bg-body rounded-xl sys-border border hover:sys-text-accent transition-colors group cursor-pointer" title="Copiar Link">
+                    <span id="sidebar-url-display" class="text-xs font-bold sys-text-primary truncate">A carregar...</span>
+                    <i data-lucide="copy" class="w-4 h-4 sys-text-secondary group-hover:sys-text-accent shrink-0"></i>
+                </button>
+            </div>
+
+            <div class="mt-auto pt-6 border-t sys-border pb-safe flex justify-end px-2">
+                <!-- Acesso Admin Seguro com Google Auth -->
+                <button onclick="window.openAdminLogin()" class="p-3 sys-text-secondary opacity-10 hover:opacity-100 transition-all cursor-pointer"><i data-lucide="settings" class="w-6 h-6"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main id="home-view" class="flex-grow max-w-3xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="mb-4 relative">
+            <i data-lucide="search" class="absolute left-4 top-3.5 w-5 h-5 text-gray-400"></i>
+            <input type="text" id="search-input" onkeyup="window.handleSearch(this.value)" placeholder="Pesquisar ofertas, lojas ou #etiquetas..." class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl shadow-sm outline-none focus:ring-2 focus:ring-blue-900 text-sm font-medium transition-all">
+        </div>
+        <div class="mb-6 border-b sys-border pb-4" id="feed-header"></div>
+        <div id="feed-container" class="flex flex-col gap-6"></div>
+    </main>
+
+    <main id="library-view" class="hidden flex-grow max-w-4xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="mb-8 border-b sys-border pb-6 text-center sm:text-left">
+            <h2 class="text-3xl font-black sys-text-primary mb-2 flex items-center justify-center sm:justify-start gap-3"><i data-lucide="briefcase" class="w-8 h-8 sys-text-accent"></i> <span id="lib-title">Serviços</span></h2>
+            <p id="lib-sub" class="sys-text-secondary font-medium">Os melhores profissionais da cidade.</p>
+        </div>
+        <div id="library-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6"></div>
+    </main>
+
+    <main id="book-detail-view" class="hidden flex-grow max-w-4xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="mb-6 border-b sys-border pb-4">
+            <button onclick="window.showLibrary()" class="flex items-center gap-2 sys-text-accent font-bold group hover:opacity-80 transition-all py-2 cursor-pointer"><i data-lucide="arrow-left" class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"></i> Voltar para Serviços</button>
+        </div>
+        <div id="book-detail-content"></div>
+    </main>
+
+    <main id="courses-view" class="hidden flex-grow max-w-4xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="mb-8 border-b sys-border pb-6 text-center sm:text-left">
+            <h2 class="text-3xl font-black sys-text-primary mb-2 flex items-center justify-center sm:justify-start gap-3"><i data-lucide="shopping-bag" class="w-8 h-8 sys-text-accent"></i> <span id="crs-title">Vitrine de Produtos</span></h2>
+            <p id="crs-sub" class="sys-text-secondary font-medium">Destaques do comércio local.</p>
+        </div>
+        <div id="courses-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6"></div>
+    </main>
+
+    <main id="course-detail-view" class="hidden flex-grow max-w-4xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="mb-6 border-b sys-border pb-4">
+            <button onclick="window.showCourses()" class="flex items-center gap-2 sys-text-accent font-bold group hover:opacity-80 transition-all py-2 cursor-pointer"><i data-lucide="arrow-left" class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"></i> Voltar para Vitrine</button>
+        </div>
+        <div id="course-detail-content"></div>
+    </main>
+
+    <main id="article-view" class="hidden flex-grow w-full z-10 transition-all duration-300 pb-28 sm:pb-8">
+        <div class="max-w-3xl mx-auto px-4 py-8 fade-enter">
+            <div class="mb-8 sys-border border-b pb-6">
+                <button onclick="window.showHome()" class="flex items-center gap-2 sys-text-accent font-bold group hover:opacity-80 transition-all py-2 cursor-pointer"><i data-lucide="arrow-left" class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"></i> Voltar</button>
+            </div>
+            <article id="article-content" class="pb-16"></article>
+        </div>
+    </main>
+
+    <main id="community-view" class="hidden flex-grow max-w-3xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="text-center mb-10">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border-4 border-white ring-1 ring-green-200"><i data-lucide="bell-ring" class="w-10 h-10"></i></div>
+            <h2 id="community-page-title" class="text-3xl sm:text-4xl font-black sys-text-primary mb-3">Seja Notificado</h2>
+            <p id="community-page-subtitle" class="text-lg sys-text-secondary max-w-xl mx-auto">Receba novidades e ofertas em primeira mão.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="sys-bg-surface p-6 rounded-2xl border sys-border shadow-sm">
+                <div class="flex items-center gap-3 mb-3 text-blue-600">
+                    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    <h3 class="font-bold text-lg sys-text-primary">O que é?</h3>
+                </div>
+                <p class="text-sm sys-text-secondary leading-relaxed">Um canal direto no WhatsApp para você receber os links das melhores ofertas, novos serviços e lojas cadastradas no nosso guia da cidade.</p>
+            </div>
+            
+            <div class="flex flex-col gap-4">
+                <div class="sys-bg-surface p-6 rounded-2xl border sys-border shadow-sm">
+                    <div class="flex items-center gap-3 mb-3 text-red-500">
+                        <i data-lucide="x-circle" class="w-6 h-6"></i>
+                        <h3 class="font-bold text-lg sys-text-primary">O que não é?</h3>
+                    </div>
+                    <p class="text-sm sys-text-secondary leading-relaxed">Não é um grupo de conversas ou spam. Você não será incomodado com correntes ou mensagens de outros membros.</p>
+                </div>
+                <div class="sys-bg-surface p-6 rounded-2xl border sys-border shadow-sm bg-gradient-to-br from-yellow-50 to-transparent">
+                    <div class="flex items-center gap-3 mb-2 text-yellow-600">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        <h3 class="font-bold text-lg sys-text-primary">A Regra de Ouro</h3>
+                    </div>
+                    <p class="text-sm sys-text-secondary leading-relaxed"><strong>Grupo silencioso.</strong> Apenas a nossa equipa envia as mensagens com as oportunidades da região.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t sys-border pt-10"><h3 class="text-2xl font-black sys-text-primary mb-6 text-center">Entre num grupo disponível:</h3><div id="community-groups-list" class="flex flex-col gap-4 max-w-lg mx-auto"></div></div>
+    </main>
+
+    <main id="bio-view" class="hidden flex-grow max-w-3xl w-full mx-auto px-4 py-8 pb-28 sm:pb-8 z-10 fade-enter">
+        <div class="mb-8 border-b sys-border pb-6"><button onclick="window.showHome()" class="flex items-center gap-2 sys-text-accent font-bold group hover:opacity-80 transition-all py-2 cursor-pointer"><i data-lucide="arrow-left" class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"></i> Voltar</button></div>
+        <div id="bio-content-area" class="prose max-w-none sys-text-primary text-base sm:text-lg leading-relaxed space-y-6 pb-10"><p class="text-center opacity-50">A carregar informações...</p></div>
+    </main>
+
+    <nav class="fixed bottom-0 w-full sys-bg-surface sys-border border-t shadow-[0_-10px_40px_rgba(0,0,0,0.06)] z-30 sm:hidden pb-safe">
+        <div class="flex justify-around items-center h-[72px] px-1">
+            <button onclick="window.clearFilter(); window.showHome(); window.scrollTo(0,0);" class="flex flex-col items-center justify-center w-full h-full sys-text-secondary hover:sys-text-accent transition-all group focus:outline-none cursor-pointer"><div class="p-1.5 rounded-2xl group-hover:bg-gray-100/50 transition-colors"><i data-lucide="tag" class="w-[20px] h-[20px]"></i></div><span class="text-[10px] font-bold mt-1">Ofertas</span></button>
+            <button onclick="window.showCourses(); window.scrollTo(0,0);" class="flex flex-col items-center justify-center w-full h-full sys-text-secondary hover:sys-text-accent transition-all group focus:outline-none cursor-pointer"><div class="p-1.5 rounded-2xl group-hover:bg-gray-100/50 transition-colors"><i data-lucide="shopping-bag" class="w-[20px] h-[20px]"></i></div><span class="text-[10px] font-bold mt-1">Produtos</span></button>
+            <button onclick="window.showLibrary(); window.scrollTo(0,0);" class="flex flex-col items-center justify-center w-full h-full sys-text-secondary hover:sys-text-accent transition-all group focus:outline-none cursor-pointer"><div class="p-1.5 rounded-2xl group-hover:bg-gray-100/50 transition-colors"><i data-lucide="briefcase" class="w-[20px] h-[20px]"></i></div><span class="text-[10px] font-bold mt-1">Serviços</span></button>
+            <button onclick="window.toggleCategoriesModal()" class="flex flex-col items-center justify-center w-full h-full sys-text-secondary hover:sys-text-accent transition-all group focus:outline-none cursor-pointer"><div class="p-1.5 rounded-2xl group-hover:bg-gray-100/50 transition-colors"><i data-lucide="store" class="w-[20px] h-[20px]"></i></div><span class="text-[10px] font-bold mt-1">Lojas</span></button>
+            <button onclick="window.showCommunity(); window.scrollTo(0,0);" class="flex flex-col items-center justify-center w-full h-full text-green-600 hover:text-green-700 transition-all group focus:outline-none cursor-pointer"><div class="p-2 rounded-2xl bg-green-600 text-white shadow-md"><i data-lucide="bell" class="w-[18px] h-[18px]"></i></div><span class="text-[10px] font-black text-green-700 mt-1">Avisos</span></button>
+        </div>
+    </nav>
+
+    <div id="categories-modal" onclick="if(event.target === this) window.toggleCategoriesModal()" class="hidden fixed inset-0 z-[60] flex items-end justify-center modal-overlay sm:hidden">
+        <div class="sys-bg-surface rounded-t-3xl shadow-2xl w-full p-6 relative transform transition-transform translate-y-full slide-up-animation pb-safe border-t sys-border z-[61]">
+            <div class="flex justify-between items-center mb-6 border-b sys-border pb-4"><h3 class="text-xl font-black sys-text-primary flex items-center gap-2"><i data-lucide="store" class="w-6 h-6 sys-text-accent"></i> Lojas & Parceiros</h3><button onclick="window.toggleCategoriesModal()" class="sys-text-secondary bg-gray-100 p-2 rounded-full cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+            <div id="bottom-categories-list" class="flex flex-col gap-3 max-h-[60vh] overflow-y-auto pb-4"></div>
+        </div>
+    </div>
+
+    <button onclick="window.showCommunity(); window.scrollTo(0,0);" class="hidden sm:flex floating-btn bg-green-600 text-white px-5 py-3 rounded-full shadow-2xl items-center gap-2 font-bold text-sm border-b-4 border-green-800 active:translate-y-1 active:border-b-0 hover:bg-green-700 transition-all cursor-pointer z-40"><i data-lucide="bell" class="w-5 h-5"></i> Receber Avisos</button>
+
+    <!-- Admin Login Modal (OAuth Google) -->
+    <div id="login-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center modal-overlay px-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 relative">
+            <button onclick="window.closeAdminLogin()" class="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="shield-check" class="w-8 h-8"></i></div>
+                <h3 class="text-2xl font-bold text-gray-900">Acesso Restrito</h3>
+                <p class="text-sm text-gray-500 mt-2">Área exclusiva para administração.</p>
+            </div>
+            
+            <button onclick="window.loginWithGoogle()" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl transition-all hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-3 shadow-sm">
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Entrar com o Google
+            </button>
+            <p id="login-error" class="text-red-500 text-sm mt-4 text-center hidden font-medium">Acesso negado. Email não autorizado.</p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboard-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center modal-overlay px-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col relative overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-6 h-6 text-blue-900"></i> Painel Comercial V2.1</h3>
+                <button onclick="window.closeDashboard()" class="p-2 text-gray-400 hover:text-gray-600 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="px-6 pt-4 border-b border-gray-100 bg-white flex gap-6 overflow-x-auto">
+                <button onclick="window.switchAdminTab('posts')" id="tab-btn-posts" class="pb-3 text-sm font-black text-blue-900 border-b-2 border-blue-900 focus:outline-none whitespace-nowrap cursor-pointer">Ofertas / Anúncios</button>
+                <button onclick="window.switchAdminTab('courses')" id="tab-btn-courses" class="pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent focus:outline-none whitespace-nowrap cursor-pointer">Produtos Vitrine</button>
+                <button onclick="window.switchAdminTab('books')" id="tab-btn-books" class="pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent focus:outline-none whitespace-nowrap cursor-pointer">Serviços Locais</button>
+                <button onclick="window.switchAdminTab('categories')" id="tab-btn-categories" class="pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent focus:outline-none whitespace-nowrap cursor-pointer">Lojas (Assinantes)</button>
+                <button onclick="window.switchAdminTab('community')" id="tab-btn-community" class="pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent focus:outline-none whitespace-nowrap cursor-pointer">Avisos (Grupos)</button>
+                <button onclick="window.switchAdminTab('bio')" id="tab-btn-bio" class="pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent focus:outline-none whitespace-nowrap cursor-pointer">Sobre o App</button>
+                <button onclick="window.switchAdminTab('config')" id="tab-btn-config" class="pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent focus:outline-none whitespace-nowrap cursor-pointer">Ajustes</button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto bg-gray-50/30">
+                <div id="admin-view-posts">
+                    <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Mural de Ofertas Rápidas</h4><button onclick="window.openEditor()" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="plus" class="w-5 h-5"></i> Nova Oferta</button></div>
+                    <div id="admin-posts-list" class="flex flex-col gap-3"></div>
+                </div>
+                <div id="admin-view-courses" class="hidden">
+                    <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Catálogo de Produtos Destaque</h4><button onclick="window.openCourseEditor()" class="bg-purple-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="shopping-bag" class="w-5 h-5"></i> Novo Produto</button></div>
+                    <div id="admin-courses-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+                <div id="admin-view-books" class="hidden">
+                    <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Prestadores de Serviços</h4><button onclick="window.openBookEditor()" class="bg-green-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="briefcase" class="w-5 h-5"></i> Novo Serviço</button></div>
+                    <div id="admin-books-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+                <div id="admin-view-categories" class="hidden">
+                    <div class="flex gap-3 mb-6 bg-gray-50 p-4 rounded-2xl border border-gray-100"><input type="text" id="new-category-input" placeholder="Nome da Loja Parceira..." class="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 outline-none text-gray-900 bg-white"><button onclick="window.createCategory()" class="bg-gray-800 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="plus" class="w-4 h-4"></i> Adicionar Loja</button></div>
+                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 pl-1">Lojas Ativas</h4>
+                    <div id="admin-categories-list" class="flex flex-col gap-2"></div>
+                </div>
+                <div id="admin-view-community" class="hidden">
+                    <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Grupos de WhatsApp (Avisos)</h4><button onclick="window.openGroupEditor()" class="bg-green-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 cursor-pointer"><i data-lucide="plus" class="w-5 h-5"></i> Novo Grupo</button></div>
+                    <div id="admin-groups-list" class="flex flex-col gap-3"></div>
+                </div>
+                <div id="admin-view-bio" class="hidden">
+                    <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Apresentação do Guia</h4><button onclick="window.saveBio()" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-blue-950 transition-colors cursor-pointer"><i data-lucide="save" class="w-4 h-4"></i> Guardar Texto</button></div>
+                    <div><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded hover:bg-gray-100 cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.execEditor('italic')" class="p-2 bg-white border border-gray-200 rounded hover:bg-gray-100 cursor-pointer"><i data-lucide="italic" class="w-4 h-4"></i></button><button type="button" onclick="window.insertEditorLink()" class="px-3 py-1 bg-white border border-gray-200 rounded text-sm hover:bg-gray-100 cursor-pointer">Link</button></div><div id="bio-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[400px] bg-white overflow-y-auto prose prose-blue max-w-none shadow-inner outline-none"></div></div>
+                </div>
+                <div id="admin-view-config" class="hidden">
+                    <div class="flex justify-between items-center mb-6"><h4 class="text-lg font-semibold text-gray-800">Ajustes Globais</h4><button onclick="window.saveConfig()" class="bg-blue-900 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:bg-blue-950 transition-colors cursor-pointer"><i data-lucide="save" class="w-4 h-4"></i> Guardar Ajustes</button></div>
+                    <div class="flex flex-col gap-6 pb-10">
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                            <h5 class="font-bold text-gray-900 mb-3"><i data-lucide="palette" class="w-4 h-4 inline mr-1 text-pink-600"></i> Identidade Visual</h5>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Nome do App (PWA)</label><input type="text" id="config-app-name" placeholder="Ex: NEGO de GV" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-pink-700 bg-white text-sm mb-3">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Link do Logótipo (URL)</label><input type="text" id="config-app-logo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-pink-700 bg-white text-sm mb-4">
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                            <h5 class="font-bold text-gray-900 mb-3"><i data-lucide="tag" class="w-4 h-4 inline mr-1 text-blue-600"></i> Página de Ofertas (Início)</h5>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Título</label><input type="text" id="config-home-title" placeholder="Ex: NEGO de GV" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 bg-white text-sm mb-3">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Subtítulo Estratégico</label><input type="text" id="config-home-subtitle" placeholder="Ex: Os melhores negócios e serviços locais." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 bg-white text-sm">
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                            <h5 class="font-bold text-gray-900 mb-3"><i data-lucide="shopping-bag" class="w-4 h-4 inline mr-1 text-purple-600"></i> Vitrine de Produtos</h5>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Título</label><input type="text" id="config-crs-title" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 bg-white text-sm mb-3">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Subtítulo</label><input type="text" id="config-crs-subtitle" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 bg-white text-sm">
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-200">
+                            <h5 class="font-bold text-gray-900 mb-3"><i data-lucide="briefcase" class="w-4 h-4 inline mr-1 text-green-600"></i> Serviços Locais</h5>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Título</label><input type="text" id="config-lib-title" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 bg-white text-sm mb-3">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Subtítulo</label><input type="text" id="config-lib-subtitle" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 bg-white text-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor de Ofertas -->
+    <div id="editor-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center modal-overlay px-4 py-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-[95vw] h-[95vh] flex flex-col relative overflow-hidden text-gray-900">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50"><h3 id="editor-title" class="text-xl font-bold text-gray-900">Nova Oferta</h3><button onclick="window.closeEditor()" class="p-2 text-gray-400 hover:text-gray-600 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <div class="p-6 flex-1 overflow-y-auto flex flex-col gap-6">
+                <input type="hidden" id="edit-post-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200"><p class="text-sm font-bold mb-3">Destaque</p><div class="flex gap-3"><label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="post_type" value="post" id="type-post" checked> Vitrine</label><label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="post_type" value="page" id="type-page"> Artigo Extenso</label></div></div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200"><p class="text-sm font-bold mb-3">Estado da Publicação</p><div class="flex gap-3"><label class="flex items-center gap-2 text-sm cursor-pointer text-green-700 font-bold"><input type="radio" name="post_status" value="published" id="status-published" checked> Publicado</label><label class="flex items-center gap-2 text-sm cursor-pointer text-yellow-700 font-bold"><input type="radio" name="post_status" value="draft" id="status-draft"> Rascunho (Oculto)</label></div></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <input type="text" id="post-title" placeholder="Título da Oferta" class="col-span-1 sm:col-span-2 border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900">
+                    <div class="flex flex-col"><span class="text-[10px] font-bold text-gray-500 uppercase ml-1 mb-1">Expira em (Opcional):</span><input type="datetime-local" id="post-expiration" class="border border-gray-300 rounded-xl px-4 py-2 outline-none focus:ring-2 focus:ring-blue-900 text-sm text-gray-600"></div>
+                    <input type="text" id="post-subtitle" placeholder="Subtítulo / Chamada" class="col-span-1 sm:col-span-2 border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900">
+                    <select id="post-category" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"></select>
+                </div>
+                <input type="text" id="post-tags" placeholder="Etiquetas (ex: pizza, promoção, delivery)" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-900">
+                <div class="bg-blue-50/30 p-5 rounded-xl border border-blue-100 grid grid-cols-2 gap-4"><input type="text" id="post-image" placeholder="Link da Imagem da Oferta" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none"><input type="text" id="post-youtube" placeholder="Link Vídeo Promo (Opcional)" class="border border-gray-300 rounded-xl px-4 py-2.5 outline-none"></div>
+                <div><label class="block text-sm font-bold mb-1">Detalhes (Regras, Validade)</label><div class="border border-gray-300 border-b-0 rounded-t-xl bg-gray-50 px-4 py-3 flex flex-wrap gap-2"><button type="button" onclick="window.execEditor('bold')" class="p-2 bg-white border border-gray-200 rounded cursor-pointer"><i data-lucide="bold" class="w-4 h-4"></i></button><button type="button" onclick="window.insertEditorButton()" class="px-3 py-1 bg-green-50 text-green-800 border-green-200 border rounded shadow-sm text-sm hover:bg-green-100 ml-auto cursor-pointer">Botão WhatsApp</button></div><div id="post-fulltext" contenteditable="true" class="w-full border border-gray-300 rounded-b-xl px-6 py-6 min-h-[300px] bg-white overflow-y-auto prose prose-blue max-w-none shadow-inner outline-none"></div></div>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between"><button id="btn-delete-editor" onclick="window.deletePost(document.getElementById('edit-post-id').value, true)" class="hidden text-red-600 font-bold px-4 hover:bg-red-50 rounded-xl py-2 cursor-pointer">Excluir</button><div class="flex gap-3 ml-auto"><button onclick="window.closeEditor()" class="px-6 py-2.5 border border-gray-300 rounded-xl cursor-pointer">Cancelar</button><button onclick="window.savePost()" class="px-8 py-2.5 bg-blue-900 text-white rounded-xl font-bold cursor-pointer">Guardar</button></div></div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-green-700 text-white px-8 py-4 rounded-2xl shadow-2xl transform transition-transform duration-300 translate-y-32 opacity-0 z-[100] flex items-center gap-3 font-bold border-b-4 border-green-900 pointer-events-none">
+        <i data-lucide="check-circle" class="w-6 h-6"></i> <span id="toast-msg">Ação concluída!</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // IMPORTADO O GOOGLE AUTH E O SIGNOUT PARA A SEGURANÇA MÁXIMA DO PAINEL
+        import { getAuth, onAuthStateChanged, signInAnonymously, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, arrayUnion, arrayRemove, increment, setDoc, query, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // CRÍTICO: COLOQUE AQUI O SEU EMAIL DO GOOGLE PARA ACEDER AO PAINEL ADMIN
+        // Nenhum outro email no mundo conseguirá abrir a sua área de administração.
+        const ADMIN_EMAILS = ["seuemail@gmail.com"]; 
+
+        const firebaseConfig = { apiKey: "AIzaSyCg5aIHRDyOPHDwrP_OFYMn2AE9euWVOyw", authDomain: "professorluizhenrique-a9fe9.firebaseapp.com", projectId: "professorluizhenrique-a9fe9", storageBucket: "professorluizhenrique-a9fe9.firebasestorage.app", messagingSenderId: "354928637639", appId: "1:354928637639:web:fd144793b51237618ff0e2" };
+        
+        window.blogPosts = []; window.siteCategories = []; window.siteBooks = []; window.siteCourses = []; window.siteGroups = [];
+        window.siteBio = ""; window.siteConfig = null; window.defaultBioText = `<p>Insira a apresentação do seu Guia Comercial aqui.</p>`;
+        window.currentCategoryFilter = null; window.currentOpenBookId = null; window.currentOpenCourseId = null; window.currentEditorId = 'post-fulltext'; window.deepLinkChecked = false;
+        window.currentSearchQuery = "";
+
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const appId = 'plh-desenvolvimento-jovens';
+
+        // SANITIZAÇÃO CONTRA HACKERS (XSS)
+        window.escapeHTML = (str) => {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        };
+
+        window.updateCategoriesMenu = () => {
+            const dbCats = window.siteCategories.map(c => window.escapeHTML(c.name)); 
+            const postCats = window.blogPosts.map(p => window.escapeHTML(p.category)).filter(c => c && c.trim() !== '');
+            const allCats = [...new Set([...dbCats, ...postCats])].sort();
+            
+            const sList = document.getElementById('categories-list'); 
+            if(sList) { sList.innerHTML = allCats.map(c => `<a href="#" onclick="window.filterByCategory('${c.replace(/'/g, "\\'")}'); window.toggleMobileMenu(); return false;" class="hover:sys-text-accent py-3 flex items-center gap-3 font-bold text-base transition-colors"><i data-lucide="store" class="w-4 h-4"></i> ${c}</a>`).join('') || '<span class="text-xs italic sys-text-secondary">Nenhuma Loja cadastrada.</span>'; }
+            const bList = document.getElementById('bottom-categories-list'); 
+            if(bList) { bList.innerHTML = allCats.map(c => `<button onclick="window.filterByCategory('${c.replace(/'/g, "\\'")}'); window.toggleCategoriesModal(true);" class="w-full text-left px-5 py-4 sys-bg-body sys-text-primary hover:sys-text-accent font-black rounded-2xl transition-colors flex items-center gap-3 border sys-border shadow-sm cursor-pointer"><i data-lucide="store" class="w-5 h-5"></i> ${c}</button>`).join(''); }
+            lucide.createIcons(); 
+        };
+
+        window.onload = async () => {
+            try { await signInAnonymously(auth); } catch (err) { console.error("Erro auth anonima", err); }
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const postsQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), limit(100));
+                    onSnapshot(postsQuery, (snapshot) => { window.blogPosts = []; snapshot.forEach(doc => { window.blogPosts.push({ id: doc.id, ...doc.data() }); }); window.blogPosts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); window.updateCategoriesMenu(); window.renderPostsFeed(); if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-posts').classList.contains('hidden')) window.renderAdminList(); });
+                    
+                    const catQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'categories'), limit(200));
+                    onSnapshot(catQuery, (snapshot) => { window.siteCategories = []; snapshot.forEach(doc => { window.siteCategories.push({ id: doc.id, ...doc.data() }); }); window.updateCategoriesMenu(); if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-categories').classList.contains('hidden')) window.renderAdminCategories(); });
+                    
+                    const groupsQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), limit(100));
+                    onSnapshot(groupsQuery, (snapshot) => { window.siteGroups = []; snapshot.forEach(doc => { window.siteGroups.push({ id: doc.id, ...doc.data() }); }); window.siteGroups.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)); window.renderCommunityGroups(); if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-community').classList.contains('hidden')) window.renderAdminGroups(); });
+
+                    onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config'), (docSnap) => { 
+                        if(docSnap.exists()) { 
+                            window.siteConfig = docSnap.data(); 
+                            if (window.siteConfig.appName) { const nameEl = document.getElementById('header-app-name'); if (nameEl) nameEl.innerText = window.escapeHTML(window.siteConfig.appName); }
+                            if (window.siteConfig.appLogo) { const logoEl = document.getElementById('header-app-logo'); if (logoEl) logoEl.src = window.getDriveImageUrl(window.siteConfig.appLogo); }
+                            if (!localStorage.getItem('user-theme-preference') && window.siteConfig.defaultTheme) window.setSiteTheme(window.siteConfig.defaultTheme, false);
+
+                            const libTitleEl = document.getElementById('lib-title'); const libSubEl = document.getElementById('lib-sub');
+                            if (libTitleEl) libTitleEl.innerText = window.escapeHTML(window.siteConfig.libTitle || 'Serviços');
+                            if (libSubEl) libSubEl.innerText = window.escapeHTML(window.siteConfig.libSubtitle || 'Profissionais de Confiança.');
+
+                            const crsTitleEl = document.getElementById('crs-title'); const crsSubEl = document.getElementById('crs-sub');
+                            if (crsTitleEl) crsTitleEl.innerText = window.escapeHTML(window.siteConfig.crsTitle || 'Vitrine Local');
+                            if (crsSubEl) crsSubEl.innerText = window.escapeHTML(window.siteConfig.crsSubtitle || 'Compre do Comércio Local.');
+
+                            const comTitleEl = document.getElementById('community-page-title'); const comSubEl = document.getElementById('community-page-subtitle');
+                            if (comTitleEl) comTitleEl.innerText = window.escapeHTML(window.siteConfig.communityTitle || 'Seja Notificado');
+                            if (comSubEl) comSubEl.innerText = window.escapeHTML(window.siteConfig.communitySubtitle || 'Receba novidades e ofertas em primeira mão.');
+
+                            window.updateAppManifest(window.siteConfig);
+                            window.renderPostsFeed(); 
+                        } 
+                        if (!document.getElementById('dashboard-modal').classList.contains('hidden') && !document.getElementById('admin-view-config').classList.contains('hidden')) window.renderAdminConfig(); 
+                    });
+                }
+            });
+        };
+
+        /* O NOVO SISTEMA DE LOGIN DE GRAU EMPRESARIAL COM GOOGLE */
+        window.openAdminLogin = () => {
+            if(!document.getElementById('sidebar-menu').classList.contains('-translate-x-full')) window.toggleMobileMenu();
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-error').classList.add('hidden');
+        };
+
+        window.closeAdminLogin = () => document.getElementById('login-modal').classList.add('hidden');
+
+        window.loginWithGoogle = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const userEmail = result.user.email.toLowerCase();
+                
+                if (ADMIN_EMAILS.includes(userEmail)) {
+                    window.closeAdminLogin();
+                    document.getElementById('dashboard-modal').classList.remove('hidden');
+                    window.switchAdminTab('posts');
+                    window.showToast("Acesso Autorizado!");
+                } else {
+                    // Segurança: Desloga o intruso imediatamente do Google Auth
+                    await signOut(auth);
+                    // Devolve o acesso anónimo para ele continuar a ver os produtos públicos
+                    await signInAnonymously(auth);
+                    
+                    const errEl = document.getElementById('login-error');
+                    errEl.innerText = "Acesso negado. Email não autorizado.";
+                    errEl.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Erro Google Login:", error);
+                const errEl = document.getElementById('login-error');
+                errEl.innerText = "Erro ao contactar a Google. Tente novamente.";
+                errEl.classList.remove('hidden');
+            }
+        };
+
+        window.closeDashboard = () => document.getElementById('dashboard-modal').classList.add('hidden');
+
+        // FUNÇÕES UX BÁSICAS
+        window.toggleMobileMenu = () => { const sidebar = document.getElementById('sidebar-menu'); const overlay = document.getElementById('sidebar-overlay'); if (sidebar.classList.contains('-translate-x-full')) { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); setTimeout(() => overlay.classList.remove('opacity-0'), 10); } else { sidebar.classList.add('-translate-x-full'); overlay.classList.add('opacity-0'); setTimeout(() => overlay.classList.add('hidden'), 300); } };
+        window.clearFilter = () => { window.currentCategoryFilter = null; window.showHome(); };
+        window.filterByCategory = (cat) => { window.currentCategoryFilter = cat; window.showHome(); };
+        window.setSiteTheme = (theme, saveUserPref = true) => { document.documentElement.className = document.documentElement.className.replace(/theme-\w+/g, '') + ' theme-' + theme; localStorage.setItem('site-theme', theme); if (saveUserPref) localStorage.setItem('user-theme-preference', 'true'); const menu = document.getElementById('theme-menu'); if(menu) menu.classList.add('hidden'); };
+        window.setSiteFontSize = (size, saveUserPref = true) => { const html = document.documentElement; html.className = html.className.replace(/font-size-\w+/g, '') + ' font-size-' + size; localStorage.setItem('site-font-size', size); if (saveUserPref) localStorage.setItem('user-font-preference', 'true'); };
+        window.toggleThemeMenu = (e) => { if(e) e.stopPropagation(); document.getElementById('theme-menu').classList.toggle('hidden'); };
+        window.cycleFontSize = () => { const html = document.documentElement; let newSize = html.classList.contains('font-size-normal') ? 'large' : (html.classList.contains('font-size-large') ? 'xlarge' : 'normal'); window.setSiteFontSize(newSize, true); };
+        document.addEventListener('click', (e) => { const menu = document.getElementById('theme-menu'); if (menu && !menu.classList.contains('hidden') && !e.target.closest('.relative')) menu.classList.add('hidden'); });
+
+        window.showHome = () => { ['article-view','library-view','book-detail-view','community-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('home-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.renderPostsFeed(); window.scrollTo(0,0); };
+        window.showLibrary = () => { ['home-view','article-view','book-detail-view','community-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('library-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
+        window.showCourses = () => { ['home-view','article-view','book-detail-view','library-view', 'community-view', 'bio-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('courses-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
+        window.showCommunity = () => { ['home-view','article-view','book-detail-view','library-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('community-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
+        window.showBio = () => { ['home-view','article-view','book-detail-view','library-view', 'community-view', 'courses-view', 'course-detail-view'].forEach(id=>document.getElementById(id).classList.add('hidden')); document.getElementById('bio-view').classList.remove('hidden'); window.currentOpenBookId = null; window.currentOpenCourseId = null; window.scrollTo(0,0); };
+
+        window.toggleCategories = (e) => { if(e) e.stopPropagation(); const list = document.getElementById('categories-list'); const chevron = document.getElementById('cat-chevron'); if(list) list.classList.toggle('hidden'); if(chevron) chevron.classList.toggle('rotate-180'); };
+        window.toggleCategoriesModal = (forceClose) => { const modal = document.getElementById('categories-modal'); const inner = modal.querySelector('.slide-up-animation'); if(modal.classList.contains('hidden') && !forceClose) { modal.classList.remove('hidden'); setTimeout(() => inner.classList.remove('translate-y-full'), 10); } else { inner.classList.add('translate-y-full'); setTimeout(() => modal.classList.add('hidden'), 300); } };
+        window.showToast = (msg) => { document.getElementById('toast-msg').innerText = msg; const toast = document.getElementById('toast'); toast.classList.remove('translate-y-32', 'opacity-0'); setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 3000); };
+        window.copyAppUrl = () => { const url = window.location.origin + window.location.pathname; const el = document.createElement('textarea'); el.value = url; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); window.showToast("Copiado para partilhar!"); };
+
+        window.handleSearch = (val) => { window.currentSearchQuery = val.toLowerCase(); window.renderPostsFeed(); };
+        window.setSearch = (tag) => { const input = document.getElementById('search-input'); if(input) input.value = tag; window.handleSearch(tag); window.scrollTo(0,0); };
+
+        window.renderCommunityGroups = () => {
+            const list = document.getElementById('community-groups-list');
+            if(!list) return;
+            if(window.siteGroups.length === 0) { list.innerHTML = `<p class="text-center sys-text-secondary py-10 italic">Nenhum grupo aberto no momento. Fique atento!</p>`; return; }
+            list.innerHTML = window.siteGroups.map(g => {
+                if (g.status === 'full') {
+                    return `<div class="flex items-center justify-between p-4 sys-bg-surface border sys-border rounded-2xl opacity-60 grayscale"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center shrink-0"><i data-lucide="lock" class="w-5 h-5 text-gray-500"></i></div><div><p class="font-black sys-text-primary">${window.escapeHTML(g.name)}</p><p class="text-xs sys-text-secondary font-bold uppercase tracking-wider">Lotação Máxima</p></div></div><button class="bg-gray-200 text-gray-500 px-4 py-3 rounded-xl font-bold text-xs uppercase cursor-not-allowed">Lotado</button></div>`;
+                } else {
+                    const safeLink = g.link.startsWith('http') ? g.link : 'https://'+g.link;
+                    return `<div class="flex items-center justify-between p-4 sys-bg-surface border-2 border-green-500 rounded-2xl shadow-lg ring-4 ring-green-500/10 transform transition-all hover:scale-[1.02] cursor-pointer" onclick="window.open('${safeLink}', '_blank')"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0 animate-pulse"><i data-lucide="bell" class="w-5 h-5 text-green-600"></i></div><div><p class="font-black sys-text-primary">${window.escapeHTML(g.name)}</p><p class="text-xs text-green-600 font-black uppercase tracking-wider">Vagas Abertas</p></div></div><button class="bg-green-600 text-white hover:bg-green-700 px-5 py-3 rounded-xl font-black text-xs sm:text-sm uppercase tracking-wide transition-colors shadow-md">Entrar</button></div>`;
+                }
+            }).join('');
+            lucide.createIcons();
+        };
+
+        window.openGroupEditor = () => {
+            const name = prompt("Nome do Grupo de Avisos (ex: VIP Ofertas):");
+            if (!name) return;
+            const link = prompt("Link de Convite do WhatsApp:");
+            if (!link) return;
+            addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'groups'), { name, link, status: 'open', createdAt: Date.now() });
+        };
+
+        window.deleteGroup = async (id) => { if(confirm("Apagar este grupo?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'groups', id)); };
+        
+        window.toggleGroupStatus = async (id, currentStatus) => { 
+            const newStatus = currentStatus === 'open' ? 'full' : 'open';
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'groups', id), { status: newStatus }); 
+        };
+
+        window.renderAdminGroups = () => {
+            const list = document.getElementById('admin-groups-list');
+            if(!list) return;
+            list.innerHTML = window.siteGroups.map(g => 
+                `<div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm">
+                    <div class="truncate mr-4">
+                        <p class="font-bold text-gray-800 truncate">${window.escapeHTML(g.name)}</p>
+                        <p class="text-xs text-gray-500 truncate">${window.escapeHTML(g.link)}</p>
+                        <p class="text-[10px] font-black mt-1 ${g.status === 'full' ? 'text-red-600' : 'text-green-600'} uppercase">${g.status === 'full' ? 'Lotado' : 'Aberto'}</p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="window.toggleGroupStatus('${g.id}', '${g.status}')" class="p-3 bg-yellow-50 text-yellow-900 rounded-lg hover:bg-yellow-100 transition-colors cursor-pointer" title="Alternar Lotação"><i data-lucide="power" class="w-4 h-4"></i></button>
+                        <button onclick="window.deleteGroup('${g.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>`
+            ).join('') || '<p class="text-center text-gray-400 py-6">Nenhum grupo criado.</p>';
+            lucide.createIcons();
+        };
+
+        const urlDisplay = document.getElementById('sidebar-url-display');
+        if (urlDisplay) urlDisplay.innerText = window.location.host + window.location.pathname;
+        
+        window.getDriveImageUrl = (url) => { if (!url) return ""; const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/); return match ? `https://lh3.googleusercontent.com/d/${match[1]}` : url; };
+        window.getYoutubeId = (url) => { const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; };
+
+        // FEED SEGURO COM XSS ESCAPED
+        window.renderPostsFeed = () => {
+            const header = document.getElementById('feed-header'); const container = document.getElementById('feed-container'); 
+            const hTitle = window.escapeHTML(window.siteConfig?.homeTitle || "NEGO de GV");
+            const hSub = window.escapeHTML(window.siteConfig?.homeSubtitle || "Ofertas exclusivas da cidade.");
+            
+            if (window.currentCategoryFilter) {
+                header.innerHTML = `<div class="flex items-center gap-3"><button onclick="window.clearFilter()" class="p-3 sys-bg-surface sys-border border rounded-full hover:opacity-80 transition-colors cursor-pointer"><i data-lucide="arrow-left" class="w-5 h-5 sys-text-secondary"></i></button><h2 class="text-3xl font-black sys-text-primary"><i data-lucide="store" class="w-6 h-6 inline mr-2 text-blue-600"></i> ${window.escapeHTML(window.currentCategoryFilter)}</h2></div>`;
+            } else {
+                header.innerHTML = `<h2 class="text-3xl font-black sys-text-primary mb-1">${hTitle}</h2><p class="sys-text-secondary font-medium">${hSub}</p>`;
+            }
+            
+            container.innerHTML = '';
+            const now = Date.now();
+            let posts = window.blogPosts.filter(p => p.status !== 'draft' && (!p.expirationTimestamp || p.expirationTimestamp > now));
+            if (window.currentCategoryFilter) posts = posts.filter(p => (p.category || '').trim().toLowerCase() === window.currentCategoryFilter.trim().toLowerCase());
+            
+            if (window.currentSearchQuery) {
+                posts = posts.filter(p => 
+                    (p.title || '').toLowerCase().includes(window.currentSearchQuery) ||
+                    (p.subtitle || '').toLowerCase().includes(window.currentSearchQuery) ||
+                    (p.category || '').toLowerCase().includes(window.currentSearchQuery) ||
+                    (p.tags || '').toLowerCase().includes(window.currentSearchQuery)
+                );
+            }
+
+            if (posts.length === 0) { container.innerHTML = `<p class="text-center py-20 sys-text-secondary opacity-70">Nenhuma oferta encontrada.</p>`; lucide.createIcons(); return; }
+
+            posts.forEach(post => {
+                const article = document.createElement('article'); 
+                article.className = 'sys-bg-surface rounded-2xl shadow-sm sys-border border overflow-hidden hover:shadow-xl transition-all duration-500 group cursor-pointer relative z-10';
+                const mediaHtml = `<div class="aspect-video bg-gray-100 overflow-hidden"><img src="${window.escapeHTML(post.imageUrl || 'https://via.placeholder.com/800x450?text=Capa')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div>`;
+                
+                let tagsHtml = '';
+                if (post.tags) {
+                    tagsHtml = `<div class="flex flex-wrap gap-2 mt-3">` + post.tags.split(',').map(t => t.trim()).filter(t => t).map(t => `<span onclick="event.stopPropagation(); window.setSearch('${window.escapeHTML(t)}')" class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-md hover:bg-blue-100 transition-colors z-20 relative">#${window.escapeHTML(t)}</span>`).join('') + `</div>`;
+                }
+
+                const isPage = post.type === 'page';
+
+                article.innerHTML = `
+                    <div onclick="window.${isPage ? 'openArticle' : 'togglePost'}('${post.id}')">
+                        ${mediaHtml}
+                        <div class="p-6">
+                            <div class="flex gap-2 mb-3">
+                                <span class="sys-bg-accent text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">${isPage ? 'ARTIGO' : 'OFERTA'}</span>
+                                ${post.category ? `<span class="bg-gray-100 text-gray-800 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border"><i data-lucide="store" class="w-3 h-3 inline"></i> ${window.escapeHTML(post.category)}</span>` : ''}
+                            </div>
+                            <h3 class="text-2xl font-black mb-2 sys-text-primary leading-tight group-hover:sys-text-accent transition-colors">${window.escapeHTML(post.title)}</h3>
+                            <p class="sys-text-secondary text-sm line-clamp-2">${window.escapeHTML(post.subtitle)}</p>
+                            ${tagsHtml}
+                            <div class="flex items-center justify-between pt-4 mt-4 sys-border border-t">
+                                <div id="indicator-${post.id}" class="text-green-600 font-black text-xs uppercase flex items-center gap-1">${isPage ? 'Ler Artigo' : 'Ver Oferta'} <i data-lucide="chevron-right" class="w-3 h-3"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    ${!isPage ? `<div id="content-${post.id}" class="faq-content sys-bg-body sys-border border-t"><div class="faq-content-inner p-8 prose max-w-none sys-text-primary cursor-auto" onclick="event.stopPropagation();">${post.fullText}</div></div>` : ''}
+                `;
+                container.appendChild(article);
+            });
+            lucide.createIcons();
+        };
+
+        window.registerView = async (id) => {
+            let viewed = JSON.parse(localStorage.getItem('plh_viewed_posts') || '[]');
+            if (!viewed.includes(id)) {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id), { views: increment(1) });
+                    viewed.push(id);
+                    localStorage.setItem('plh_viewed_posts', JSON.stringify(viewed));
+                } catch(e) { console.error("Erro ao registrar view", e); }
+            }
+        };
+
+        window.openArticle = (id) => { 
+            const p = window.blogPosts.find(x => x.id === id); if (!p) return; 
+            ['home-view','library-view','book-detail-view','community-view', 'bio-view', 'courses-view', 'course-detail-view'].forEach(i=>document.getElementById(i).classList.add('hidden')); 
+            document.getElementById('article-view').classList.remove('hidden'); 
+            window.scrollTo(0, 0); 
+            window.registerView(id);
+            const ytId = window.getYoutubeId(p.youtubeUrl); 
+            const mediaHtml = ytId ? `<div class="aspect-video rounded-3xl overflow-hidden mb-8 shadow-2xl bg-black"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe></div>` : `<div class="aspect-video rounded-3xl overflow-hidden mb-8 shadow-xl"><img src="${window.escapeHTML(p.imageUrl || 'https://via.placeholder.com/800x450?text=Artigo')}" class="w-full h-full object-cover"></div>`; 
+            document.getElementById('article-content').innerHTML = `${mediaHtml}<div class="px-2"><h1 class="text-4xl sm:text-6xl font-black mb-6 leading-tight tracking-tight sys-text-primary">${window.escapeHTML(p.title)}</h1><p class="text-xl sm:text-2xl opacity-80 mb-10 pb-10 sys-border border-b font-medium italic sys-text-secondary">${window.escapeHTML(p.subtitle)}</p><div class="prose max-w-none leading-relaxed">${p.fullText}</div></div>`; 
+            lucide.createIcons(); 
+        };
+
+        window.togglePost = (id) => { 
+            const el = document.getElementById('content-' + id); if(!el) return; 
+            el.classList.toggle('open'); 
+            const ind = document.getElementById('indicator-' + id);
+            if(ind) ind.innerHTML = el.classList.contains('open') ? `Recolher <i data-lucide="chevron-up" class="w-3 h-3"></i>` : `Ver Oferta <i data-lucide="chevron-right" class="w-3 h-3"></i>`; 
+            if(el.classList.contains('open')) window.registerView(id);
+            lucide.createIcons(); 
+        };
+
+        // RENDER ADMIN
+        window.renderAdminList = () => {
+            const list = document.getElementById('admin-posts-list');
+            const now = Date.now();
+            list.innerHTML = window.blogPosts.map(p => {
+                const isExpired = p.expirationTimestamp && p.expirationTimestamp < now;
+                const statusBadge = isExpired ? `<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-100 text-red-800 shrink-0">EXPIRADO</span>` : `<span class="text-[10px] font-black px-2 py-0.5 rounded-full ${p.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'} shrink-0">${(p.status || 'published').toUpperCase()}</span>`;
+                const viewsCount = p.views || 0;
+                const typeLabel = p.type === 'page' ? 'Artigo' : 'Oferta';
+
+                return `
+                <div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl bg-white shadow-sm ${isExpired ? 'opacity-60' : ''}">
+                    <div class="truncate mr-4 flex flex-col gap-1 min-w-0">
+                        <span class="font-bold text-gray-800 truncate text-sm sm:text-base">${window.escapeHTML(p.title)}</span>
+                        <div class="flex items-center gap-2 mt-1">
+                            ${statusBadge}
+                            <span class="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-1"><i data-lucide="layout-template" class="w-3 h-3"></i> ${typeLabel}</span>
+                            <span class="text-[10px] font-bold text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-full"><i data-lucide="eye" class="w-3 h-3"></i> ${viewsCount} Visitas</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="window.editPost('${p.id}')" class="p-3 bg-blue-50 text-blue-900 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="window.deletePost('${p.id}')" class="p-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>`;
+            }).join('') || '<p class="text-center text-gray-400 py-6">Nenhum conteúdo.</p>';
+            lucide.createIcons();
+        };
+
+        window.switchAdminTab = (tab) => {
+            ['posts', 'books', 'categories', 'community', 'bio', 'courses', 'config'].forEach(t => {
+                document.getElementById('admin-view-'+t).classList.add('hidden');
+                document.getElementById('tab-btn-'+t).className = "pb-3 text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-colors focus:outline-none whitespace-nowrap cursor-pointer";
+            });
+            document.getElementById('admin-view-'+tab).classList.remove('hidden');
+            document.getElementById('tab-btn-'+tab).className = "pb-3 text-sm font-black text-blue-900 border-b-2 border-blue-900 transition-colors focus:outline-none whitespace-nowrap cursor-pointer";
+            if(tab === 'posts') window.renderAdminList(); 
+            if(tab === 'config') window.renderAdminConfig();
+            if(tab === 'community') window.renderAdminGroups();
+        };
+
+        window.openEditor = () => { 
+            window.currentEditorId = 'post-fulltext';
+            const dbCats = window.siteCategories.map(c => c.name); const postCats = window.blogPosts.map(p => p.category).filter(c => c && c.trim() !== ''); const allCats = [...new Set([...dbCats, ...postCats])].sort();
+            const catSelect = document.getElementById('post-category'); catSelect.innerHTML = '<option value="">Sem Loja Parceira</option>' + allCats.map(c => `<option value="${window.escapeHTML(c)}">${window.escapeHTML(c)}</option>`).join('');
+            document.getElementById('edit-post-id').value = ''; ['title', 'subtitle', 'tags', 'image', 'youtube', 'expiration'].forEach(f => { const el = document.getElementById('post-'+f); if(el) el.value = ''; }); 
+            catSelect.value = ''; document.getElementById('post-fulltext').innerHTML = ''; document.getElementById('editor-modal').classList.remove('hidden'); document.getElementById('btn-delete-editor').classList.add('hidden'); 
+        };
+
+        window.editPost = (id) => { 
+            window.currentEditorId = 'post-fulltext'; const p = window.blogPosts.find(x => x.id === id); 
+            const dbCats = window.siteCategories.map(c => c.name); const postCats = window.blogPosts.map(post => post.category).filter(c => c && c.trim() !== ''); const allCats = [...new Set([...dbCats, ...postCats])].sort();
+            const catSelect = document.getElementById('post-category'); catSelect.innerHTML = '<option value="">Sem Loja Parceira</option>' + allCats.map(c => `<option value="${window.escapeHTML(c)}">${window.escapeHTML(c)}</option>`).join('');
+            document.getElementById('edit-post-id').value = p.id; document.getElementById('post-title').value = p.title; document.getElementById('post-subtitle').value = p.subtitle; document.getElementById('post-tags').value = p.tags || '';
+            
+            if (p.expirationTimestamp) { const d = new Date(p.expirationTimestamp); const tzOffset = d.getTimezoneOffset() * 60000; document.getElementById('post-expiration').value = (new Date(d - tzOffset)).toISOString().slice(0, 16); } else { document.getElementById('post-expiration').value = ''; }
+            
+            catSelect.value = p.category || ''; document.getElementById('post-image').value = p.imageUrl || ''; document.getElementById('post-youtube').value = p.youtubeUrl || ''; document.getElementById('post-fulltext').innerHTML = p.fullText; 
+            document.getElementById('editor-modal').classList.remove('hidden'); document.getElementById('btn-delete-editor').classList.remove('hidden'); 
+        };
+
+        window.closeEditor = () => document.getElementById('editor-modal').classList.add('hidden');
+        window.savePost = async () => {
+            const btn = document.getElementById('btn-save-post'); if(btn) btn.disabled = true; const id = document.getElementById('edit-post-id').value;
+            const expVal = document.getElementById('post-expiration').value; const expirationTimestamp = expVal ? new Date(expVal).getTime() : null;
+            const data = { type: document.querySelector('input[name="post_type"]:checked').value, status: document.querySelector('input[name="post_status"]:checked').value, category: document.getElementById('post-category').value.trim(), title: document.getElementById('post-title').value || "Oferta", subtitle: document.getElementById('post-subtitle').value || "", tags: document.getElementById('post-tags').value || "", imageUrl: document.getElementById('post-image').value || "", youtubeUrl: document.getElementById('post-youtube').value || "", expirationTimestamp: expirationTimestamp, fullText: document.getElementById('post-fulltext').innerHTML };
+            try { if (id) await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id), data); else await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), { ...data, createdAt: Date.now() }); window.closeEditor(); } catch (e) { alert("Erro: " + e.message); } finally { if(btn) btn.disabled = false; }
+        };
+        window.deletePost = async (id, fromEditor = false) => { if (confirm("Excluir conteúdo?")) { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'posts', id)); if (fromEditor) window.closeEditor(); } };
+
+        // CONFIGURAÇÕES
+        window.renderAdminConfig = () => {
+            document.getElementById('config-app-name').value = window.siteConfig?.appName || "NEGO de GV";
+            document.getElementById('config-app-logo').value = window.siteConfig?.appLogo || "";
+            document.getElementById('config-home-title').value = window.siteConfig?.homeTitle || "NEGO de GV";
+            document.getElementById('config-home-subtitle').value = window.siteConfig?.homeSubtitle || "Os melhores negócios.";
+            document.getElementById('config-crs-title').value = window.siteConfig?.crsTitle || "Vitrine Local";
+            document.getElementById('config-crs-subtitle').value = window.siteConfig?.crsSubtitle || "Compre do comércio local.";
+            document.getElementById('config-lib-title').value = window.siteConfig?.libTitle || "Serviços";
+            document.getElementById('config-lib-subtitle').value = window.siteConfig?.libSubtitle || "Profissionais de Confiança.";
+        };
+        
+        window.saveConfig = async () => {
+            try {
+                window.showToast("A Guardar...");
+                const data = {
+                    appName: document.getElementById('config-app-name').value, appLogo: document.getElementById('config-app-logo').value,
+                    homeTitle: document.getElementById('config-home-title').value, homeSubtitle: document.getElementById('config-home-subtitle').value,
+                    crsTitle: document.getElementById('config-crs-title').value, crsSubtitle: document.getElementById('config-crs-subtitle').value,
+                    libTitle: document.getElementById('config-lib-title').value, libSubtitle: document.getElementById('config-lib-subtitle').value
+                };
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config'), data, {merge: true});
+                window.showToast("Ajustes guardados com sucesso!");
+            } catch(e) { alert("Erro: " + e.message); }
+        };
+
+        window.execEditor = (cmd, val = null) => { document.execCommand(cmd, false, val); const el = document.getElementById(window.currentEditorId || 'post-fulltext'); if(el) el.focus(); };
+        window.insertEditorButton = () => { const text = prompt("Texto do botão:"); if (!text) return; const url = prompt("Link do WhatsApp:"); if (!url) return; const safeUrl = url.startsWith('http') ? url : 'https://' + url; window.execEditor('insertHTML', `<div class="my-8 flex justify-center"><a href="${safeUrl}" target="_blank" class="bg-green-600 font-black text-sm sm:text-base py-4 px-10 rounded-full shadow-2xl transition-all hover:scale-105 uppercase tracking-wide" style="color: #ffffff !important; text-decoration: none !important;">${window.escapeHTML(text)}</a></div><p><br></p>`); };
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
